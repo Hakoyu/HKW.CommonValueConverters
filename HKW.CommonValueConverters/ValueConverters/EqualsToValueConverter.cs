@@ -27,13 +27,13 @@ public class EqualsToValueConverter<T> : InvertibleValueConverterBase
     public Func<T> GetFalseValue { get; set; } = () => default!;
 
     /// <summary>
-    /// 可为空
+    /// 是可为空的
     /// </summary>
-    public Func<bool> GetNullable { get; set; } = () => false;
+    public Func<bool> GetIsNullable { get; set; } = () => false;
 
     /// <summary>
     /// 空值
-    /// <para>只有 <see cref="GetNullable"/> 返回 <see langword="true"/> 时, 才对value进行判断并返回此方法的结果</para>
+    /// <para>只有 <see cref="GetIsNullable"/> 返回 <see langword="true"/> 时, 才对value进行判断并返回此方法的结果</para>
     /// </summary>
     public Func<T> GetNullValue { get; set; } = () => default!;
 
@@ -52,7 +52,7 @@ public class EqualsToValueConverter<T> : InvertibleValueConverterBase
     {
         var target = parameter ?? GetTargetValue();
         var isInverted = GetIsInverted();
-        if (GetNullable() && value is null ^ isInverted)
+        if (GetIsNullable() && value is null ^ isInverted)
             return GetNullValue();
         if (GetIsStringEquals())
             return value?.ToString() == parameter?.ToString() ^ isInverted

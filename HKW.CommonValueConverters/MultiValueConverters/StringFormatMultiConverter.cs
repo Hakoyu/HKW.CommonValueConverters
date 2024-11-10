@@ -22,9 +22,9 @@ namespace HKW.CommonValueConverters;
 public class StringFormatMultiConverter : MultiValueConverterBase
 {
     /// <summary>
-    /// 隐藏未设置和空占位符
+    /// 隐藏未设置的占位符
     /// </summary>
-    public Func<bool> GetHiddenUnsetAndNull { get; set; } = () => false;
+    public Func<string?> GetReplaceUnsetValue { get; set; } = () => null;
 
     /// <inheritdoc/>
     public override object? Convert(
@@ -34,24 +34,25 @@ public class StringFormatMultiConverter : MultiValueConverterBase
         CultureInfo? culture
     )
     {
+        var replaceValue = GetReplaceUnsetValue();
         if (parameter is string format && string.IsNullOrWhiteSpace(format) is false)
         {
-            if (GetHiddenUnsetAndNull())
+            if (replaceValue is not null)
                 return string.Format(
                     format,
-                    values.Select(v => v is null || v == UnsetValue ? string.Empty : v).ToArray()
+                    values.Select(v => v == UnsetValue ? replaceValue : v).ToArray()
                 );
             else
-                return string.Format(format, values);
+                return string.Format(format, values is object[] v ? v : [.. values]);
         }
         else
         {
             format = (string)values[0]!;
             var temp = values.Skip(1);
-            if (GetHiddenUnsetAndNull())
+            if (replaceValue is not null)
                 return string.Format(
                     format,
-                    temp.Select(v => v is null || v == UnsetValue ? string.Empty : v).ToArray()
+                    temp.Select(v => v == UnsetValue ? replaceValue : v).ToArray()
                 );
             else
                 return string.Format(format, temp.ToArray());
