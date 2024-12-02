@@ -26,13 +26,6 @@ public interface ICommonValueConverter
     public PreferredCulture PreferredCulture { get; set; }
 
     /// <summary>
-    /// 选择文化
-    /// </summary>
-    /// <param name="converterCulture">转换器文化</param>
-    /// <returns>文化</returns>
-    public CultureInfo SelectCulture(Func<CultureInfo> converterCulture);
-
-    /// <summary>
     /// 获取值
     /// </summary>
     /// <typeparam name="T">值类型</typeparam>
@@ -72,11 +65,16 @@ public abstract class CommonConverterBase : ICommonValueConverter
     /// </summary>
     public Func<object?> GetDefaultResult { get; set; } = () => GlobalDefaultResult;
 
+    private PreferredCulture? _preferredCulture;
+
     /// <summary>
     /// 首选文化
     /// </summary>
-    public PreferredCulture PreferredCulture { get; set; } =
-        ValueConvertersConfig.DefaultPreferredCulture;
+    public PreferredCulture PreferredCulture
+    {
+        get => _preferredCulture ?? ValueConvertersConfig.DefaultPreferredCulture;
+        set => _preferredCulture = value;
+    }
 
     T ICommonValueConverter.GetValue<T>(CommonDependencyProperty<T> dependencyProperty)
     {

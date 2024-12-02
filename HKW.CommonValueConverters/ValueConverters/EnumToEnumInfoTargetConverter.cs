@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using HKW.HKWUtils;
+using HKW.HKWUtils.Extensions;
 
 namespace HKW.CommonValueConverters;
 
@@ -24,11 +25,8 @@ public class EnumToEnumInfoTargetConverter : ValueConverterBase
     {
         var defultResult = GetDefaultResult();
         if (value is not Enum @enum)
-        {
-            ArgumentNullException.ThrowIfNull(value);
             return defultResult;
-        }
         var type = value.GetType();
-        return EnumInfo.GetEnumInfo(type, @enum)?.GetInfo(GetEnumInfoDisplayTarget());
+        return @enum.GetDisplayInfo(GetEnumInfoDisplayTarget());
     }
 }
