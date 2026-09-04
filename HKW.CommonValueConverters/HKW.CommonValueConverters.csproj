@@ -27,7 +27,7 @@
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <Reference Include="HKW.Utils">
-      <HintPath>..\..\HKW.Utils\HKW.Utils\bin\Debug\net8.0\HKW.Utils.dll</HintPath>
+      <HintPath>..\..\HKW.Utils\HKW.Utils\bin\Debug\net10.0\HKW.Utils.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)'=='Release'">

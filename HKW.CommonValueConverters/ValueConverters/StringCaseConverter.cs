@@ -5,7 +5,7 @@ namespace HKW.CommonValueConverters;
 /// <summary>
 /// 字符串大小写转换器
 /// <para><![CDATA[
-/// {Binding Text, Converter={StaticResource StringCaseConverter}, ConverterParameter=L}}
+/// {Binding Text, Converter={StaticResource StringCaseConverter}, ConverterParameter=L}
 /// Parameter == L
 /// result: culture.TextInfo.ToLower(Text)
 /// Parameter == U

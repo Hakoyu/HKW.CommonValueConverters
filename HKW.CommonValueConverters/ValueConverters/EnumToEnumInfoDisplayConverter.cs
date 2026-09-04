@@ -10,6 +10,11 @@ namespace HKW.CommonValueConverters;
 public class EnumToEnumInfoDisplayConverter : ValueConverterBase
 {
     /// <summary>
+    /// 默认枚举信息目标
+    /// </summary>
+    public const EnumInfoDisplayTarget DefaultEnumInfoDisplayTarget = EnumInfoDisplayTarget.Name;
+
+    /// <summary>
     /// 枚举信息目标
     /// </summary>
     public Func<EnumInfoDisplayTarget> GetEnumInfoDisplayTarget { get; set; } =

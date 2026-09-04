@@ -15,10 +15,10 @@ namespace HKW.CommonValueConverters;
 ///   <Binding Path="Str5" />
 /// </MultiBinding>
 /// result:
+/// Str1 is valid string, return Str2
 /// Str1 is null, return Str3
 /// Str1 is Empty, return Str4
 /// Str1 is WhiteSpace, return Str5
-/// else, return Str2
 /// ]]></code></para>
 /// </summary>
 public class FirstStringStateToOtherStringMultiConverter : MultiValueConverterBase

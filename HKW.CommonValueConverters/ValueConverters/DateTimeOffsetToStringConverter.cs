@@ -10,7 +10,7 @@ public class DateTimeOffsetToStringConverter : ValueConverterBase
     /// <summary>
     /// 默认格式化
     /// </summary>
-    protected const string DefaultFormat = "g";
+    public const string DefaultFormat = "g";
 
     private readonly ITimeZoneInfo _timeZone;
 

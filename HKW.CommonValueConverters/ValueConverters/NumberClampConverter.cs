@@ -11,18 +11,17 @@ namespace HKW.CommonValueConverters;
 /// 检查数值是否在 MinValue 和 MaxValue 之间
 /// </para>
 /// </summary>
-public class NumberClampConverter<T> : ValueConverterBase
-    where T : struct, INumber<T>
+public class NumberClampConverter : ValueConverterBase
 {
     /// <summary>
-    /// 最大值
+    /// 默认数值类型
     /// </summary>
-    public Func<T> GetMaxValue { get; set; } = () => T.One;
+    public const NumberType DefaultNumberType = NumberType.Int32;
 
     /// <summary>
-    /// 最小值
+    /// 数值类型
     /// </summary>
-    public Func<T> GetMinValue { get; set; } = () => T.Zero;
+    public Func<NumberType> GetNumberType { get; set; } = static () => DefaultNumberType;
 
     /// <inheritdoc/>
     public override object? Convert(
@@ -32,19 +31,20 @@ public class NumberClampConverter<T> : ValueConverterBase
         CultureInfo? culture
     )
     {
-        if (value is not T)
+        if (value is null)
             return GetDefaultResult();
-        object min = GetMinValue();
-        object max = GetMaxValue();
+        var numberType = GetNumberType();
+        object min = NumberUtils.GetDefault(numberType);
+        object max = NumberUtils.GetDefault(numberType);
         if (parameter is string str)
         {
-            var split = str.AsSpan().Split(',');
-            if (split.MoveNext())
-                min = NumberUtils.ConvertTo<T>(split.Current);
-            if (split.MoveNext())
-                max = NumberUtils.ConvertTo<T>(split.Current);
+            var split = str.Split(',');
+            min = NumberUtils.ConvertTo(split[0], numberType);
+            max = NumberUtils.ConvertTo(split[1], numberType);
         }
-        return NumberUtils.CompareX<T>(value, min, ComparisonOperatorType.LessThan) is false
-            && NumberUtils.CompareX<T>(value, max, ComparisonOperatorType.GreaterThan) is false;
+        return NumberUtils.CompareBy(value, min, numberType, ComparisonOperatorType.LessThan)
+                is false
+            && NumberUtils.CompareBy(value, max, numberType, ComparisonOperatorType.GreaterThan)
+                is false;
     }
 }

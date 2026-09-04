@@ -8,9 +8,14 @@ namespace HKW.CommonValueConverters;
 public class StringCheckConverter : InvertibleValueConverterBase
 {
     /// <summary>
+    /// 默认字符串检查类型
+    /// </summary>
+    public const StringCheckType DefaultStringCheckType = StringCheckType.Null;
+
+    /// <summary>
     /// 字符串检查类型
     /// </summary>
-    public Func<StringCheckType> GetStringCheckType { get; set; } = () => StringCheckType.Null;
+    public Func<StringCheckType> GetStringCheckType { get; set; } = () => DefaultStringCheckType;
 
     /// <inheritdoc/>
     public override object? Convert(

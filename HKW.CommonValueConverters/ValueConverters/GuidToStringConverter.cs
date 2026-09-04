@@ -10,7 +10,7 @@ public class GuidToStringConverter : ValueConverterBase
     /// <summary>
     /// 默认格式化
     /// </summary>
-    protected const string DefaultFormat = "D";
+    public const string DefaultFormat = "D";
 
     /// <summary>
     /// 字符串改变, true 到大写, false 到小写, null 不变

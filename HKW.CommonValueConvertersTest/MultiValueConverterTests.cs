@@ -47,7 +47,7 @@ public sealed class MultiValueConverterTests
     [TestMethod]
     public void CalculatorMultiConverter()
     {
-        var c = new CalculatorMultiConverter<int>();
+        var c = new CalculatorMultiConverter();
 
         Assert.AreEqual(10, c.Convert([2, 3, 5], null, "++", null));
         Assert.AreEqual(15, c.Convert([2, "+", 3, "*", 3], null, null, null));

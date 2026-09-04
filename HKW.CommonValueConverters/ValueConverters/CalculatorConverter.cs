@@ -12,20 +12,29 @@ namespace HKW.CommonValueConverters;
 /// return: Number + 8
 /// ]]></code></para>
 /// </summary>
-public class CalculatorConverter<T> : ValueConverterBase
-    where T : struct, INumber<T>
+public class CalculatorConverter : ValueConverterBase
 {
-    /// <inheritdoc/>
-    public CalculatorConverter()
-    {
-        GetDefaultResult = () => T.Zero;
-    }
+    /// <summary>
+    /// 默认数值类型
+    /// </summary>
+    public const NumberType DefaultNumberType = NumberType.Int32;
+
+    /// <summary>
+    /// 数值类型
+    /// </summary>
+    public Func<NumberType> GetNumberType { get; set; } = () => DefaultNumberType;
+
+    /// <summary>
+    /// 默认运算符类型
+    /// </summary>
+    public const ArithmeticOperatorType DefaultArithmeticOperatorType =
+        ArithmeticOperatorType.Addition;
 
     /// <summary>
     /// 运算符类型
     /// </summary>
     public Func<ArithmeticOperatorType> GetOperatorType { get; set; } =
-        () => ArithmeticOperatorType.Addition;
+        () => DefaultArithmeticOperatorType;
 
     /// <inheritdoc/>
     public override object? Convert(
@@ -37,6 +46,6 @@ public class CalculatorConverter<T> : ValueConverterBase
     {
         if (value == UnsetValue || parameter == UnsetValue)
             return GetDefaultResult();
-        return NumberUtils.Arithmetic<T>(value!, parameter!, GetOperatorType());
+        return NumberUtils.Arithmetic(value!, parameter!, GetNumberType(), GetOperatorType());
     }
 }

@@ -19,10 +19,20 @@ namespace HKW.CommonValueConverters;
 public class BoolToSplitParameterConverter : ValueConverterBase
 {
     /// <summary>
+    /// 默认分割符
+    /// </summary>
+    public const string DefaultSeparator = ",";
+
+    /// <summary>
     /// 分割符
     /// </summary>
     [DefaultValue(",")]
-    public Func<string> GetSeparator { get; set; } = () => ",";
+    public Func<string> GetSeparator { get; set; } = () => DefaultSeparator;
+
+    /// <summary>
+    /// 分割值转换器
+    /// </summary>
+    public Func<string, object> ConvertSplitValue { get; set; } = s => s;
 
     /// <inheritdoc/>
     public override object? Convert(
@@ -40,11 +50,11 @@ public class BoolToSplitParameterConverter : ValueConverterBase
         if (spilt.Length == 0)
             return defultResult;
         if (spilt.Length >= 1 && r is true)
-            return spilt[0];
+            return ConvertSplitValue(spilt[0]);
         else if (spilt.Length >= 2 && r is false)
-            return spilt[1];
+            return ConvertSplitValue(spilt[1]);
         else if (spilt.Length >= 3 && value is null)
-            return spilt[2];
+            return ConvertSplitValue(spilt[2]);
         return defultResult;
     }
 }

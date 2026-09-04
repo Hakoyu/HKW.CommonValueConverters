@@ -10,7 +10,7 @@ public class TimeSpanToStringConverter : ValueConverterBase
     /// <summary>
     /// 默认格式化
     /// </summary>
-    protected const string DefaultFormat = "g";
+    public const string DefaultFormat = "g";
 
     /// <summary>
     /// 时间格式化

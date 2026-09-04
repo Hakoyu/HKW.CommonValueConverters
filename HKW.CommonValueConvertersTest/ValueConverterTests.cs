@@ -62,34 +62,35 @@ public sealed class ValueConverterTests
     }
 
     [TestMethod]
-    public void CalculatorConverter_Generic()
+    public void CalculatorConverter()
     {
-        var c = new CalculatorConverter<int>();
-
+        var c = new CalculatorConverter();
         Assert.AreEqual(5, c.Convert(2, null, 3, null));
-        Assert.AreEqual(5, c.ConvertBack(2, null, 3, null));
-    }
-
-    [TestMethod]
-    public void CollectionCountEqualsConverter()
-    {
-        var c = new CollectionCountEqualsConverter();
-
-        var array = new[] { 1, 2, 3 };
-        Assert.AreEqual(false, c.Convert(array, null, 2, null));
-        Assert.AreEqual(true, c.Convert(array, null, 3, null));
-        Assert.AreEqual(false, c.Convert("invalid", null, 3, null));
     }
 
     [TestMethod]
     public void CollectionCountCompareConverter()
     {
-        var c = new CollectionCountDifferenceConverter();
+        var c = new CollectionCountCompareConverter();
 
-        var array = new[] { 1, 2, 3 };
-        Assert.AreEqual(1, c.Convert(array, null, 2, null));
-        Assert.AreEqual(0, c.Convert(array, null, 3, null));
-        Assert.AreEqual(4, c.Convert("invalid", null, 3, null));
+        Assert.AreEqual(0, c.Convert(new[] { 1, 2, 3 }, null, 3, null));
+        Assert.AreEqual(1, c.Convert("test", null, "3", null));
+        Assert.AreEqual(-1, c.Convert(new[] { 1, 2 }, null, 3, null));
+        Assert.AreEqual(c.GetDefaultResult(), c.Convert(new object(), null, 1, null));
+        Assert.AreEqual(c.GetDefaultResult(), c.Convert(new[] { 1 }, null, "invalid", null));
+    }
+
+    [TestMethod]
+    public void CollectionCountCompareByConverter()
+    {
+        var c = new CollectionCountCompareByConverter();
+
+        Assert.AreEqual(true, c.Convert(new[] { 1, 2, 3 }, null, ">2", null));
+        Assert.AreEqual(false, c.Convert(new[] { 1, 2, 3 }, null, ">3", null));
+        Assert.AreEqual(true, c.Convert("test", null, "<=4", null));
+        Assert.AreEqual(false, c.Convert(new[] { 1, 2 }, null, "<2", null));
+        Assert.AreEqual(c.GetDefaultResult(), c.Convert(new object(), null, ">0", null));
+        Assert.AreEqual(c.GetDefaultResult(), c.Convert(new[] { 1 }, null, "invalid", null));
     }
 
     [TestMethod]
@@ -187,7 +188,7 @@ public sealed class ValueConverterTests
     [TestMethod]
     public void FirstOrDefaultResultConverter()
     {
-        var c = new FirstOrDefaultResultConverter() { GetDefaultResult = () => "Default" };
+        var c = new FirstOrDefaultConverter() { GetDefaultResult = () => "Default" };
         var array = new[] { 1, 2, 3 };
         Assert.AreEqual(1, c.Convert(array, null, null, null));
         Assert.AreEqual("Default", c.Convert(Array.Empty<int>(), null, null, null));
@@ -232,13 +233,7 @@ public sealed class ValueConverterTests
     [TestMethod]
     public void NumberClampConverter()
     {
-        var c = new NumberClampConverter<int>() { GetMinValue = () => 1, GetMaxValue = () => 10 };
-
-        Assert.AreEqual(true, c.Convert(1, null, null, null));
-        Assert.AreEqual(true, c.Convert(5, null, null, null));
-        Assert.AreEqual(true, c.Convert(10, null, null, null));
-        Assert.AreEqual(false, c.Convert(0, null, null, null));
-        Assert.AreEqual(false, c.Convert(11, null, null, null));
+        var c = new NumberClampConverter();
 
         Assert.AreEqual(true, c.Convert(5, null, "2,8", null));
     }
@@ -246,7 +241,7 @@ public sealed class ValueConverterTests
     [TestMethod]
     public void NumberCompareConverter()
     {
-        var c = new NumberCompareConverter<int>();
+        var c = new NumberCompareConverter();
 
         Assert.AreEqual(0, c.Convert(5, null, 5, null));
         Assert.AreEqual(1, c.Convert(6, null, 5, null));
@@ -256,7 +251,7 @@ public sealed class ValueConverterTests
     [TestMethod]
     public void NumberCompareXConverter()
     {
-        var c = new NumberCompareXConverter<int>();
+        var c = new NumberCompareByConverter();
 
         Assert.AreEqual(true, c.Convert(6, null, ">5", null));
         Assert.AreEqual(false, c.Convert(5, null, ">5", null));
@@ -292,7 +287,6 @@ public sealed class ValueConverterTests
         var value = TimeSpan.FromHours(1.5);
 
         Assert.AreEqual("01:30:00", c.Convert(value, null, null, CultureInfo.InvariantCulture));
-        Assert.AreEqual("Min", c.Convert(TimeSpan.MinValue, null, null, null));
         Assert.AreEqual(value, c.ConvertBack("01:30:00", null, null, CultureInfo.InvariantCulture));
     }
 

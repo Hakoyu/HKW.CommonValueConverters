@@ -6,7 +6,7 @@ namespace HKW.CommonValueConverters;
 /// <summary>
 /// 第一个或默认转换器
 /// </summary>
-public class FirstOrDefaultResultConverter : ValueConverterBase
+public class FirstOrDefaultConverter : ValueConverterBase
 {
     /// <inheritdoc/>
     public override object? Convert(
