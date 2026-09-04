@@ -1,7 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.Windows;
-using HKW.CommonValueConverters;
+﻿using System.Globalization;
 
 namespace HKW.CommonValueConverters;
 
@@ -14,11 +11,6 @@ public class DateTimeToStringConverter : ValueConverterBase
     /// 默认格式化
     /// </summary>
     protected const string DefaultFormat = "g";
-
-    /// <summary>
-    /// 默认最小值
-    /// </summary>
-    protected const string DefaultMinValueString = "";
 
     private readonly ITimeZoneInfo _timeZone;
 
@@ -39,11 +31,6 @@ public class DateTimeToStringConverter : ValueConverterBase
     /// </summary>
     public Func<string> GetFormat { get; set; } = () => DefaultFormat;
 
-    /// <summary>
-    /// 最小值
-    /// </summary>
-    public Func<string> GetMinValueString { get; set; } = () => DefaultMinValueString;
-
     /// <inheritdoc/>
     public override object? Convert(
         object? value,
@@ -52,19 +39,12 @@ public class DateTimeToStringConverter : ValueConverterBase
         CultureInfo? culture
     )
     {
-        if (value is DateTime dateTime)
-        {
-            var format = parameter as string ?? GetFormat();
-            if (dateTime == DateTime.MinValue)
-            {
-                return GetMinValueString;
-            }
+        if (value is not DateTime dateTime)
+            return GetDefaultResult();
 
-            var localDateTime = TimeZoneInfo.ConvertTime(dateTime, _timeZone.Local);
-            return localDateTime.ToString(format, culture);
-        }
-
-        return GetDefaultResult();
+        var format = parameter as string ?? GetFormat();
+        var localDateTime = TimeZoneInfo.ConvertTime(dateTime, _timeZone.Local);
+        return localDateTime.ToString(format, culture);
     }
 
     /// <inheritdoc/>

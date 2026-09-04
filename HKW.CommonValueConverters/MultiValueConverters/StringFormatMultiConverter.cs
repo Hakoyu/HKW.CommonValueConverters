@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using System.Windows;
 
 namespace HKW.CommonValueConverters;
 
@@ -35,15 +34,19 @@ public class StringFormatMultiConverter : MultiValueConverterBase
     )
     {
         var replaceValue = GetReplaceUnsetValue();
+        if (values is null)
+            return GetDefaultResult();
+        culture ??= CultureInfo.CurrentCulture;
         if (parameter is string format && string.IsNullOrWhiteSpace(format) is false)
         {
             if (replaceValue is not null)
                 return string.Format(
+                    culture,
                     format,
                     values.Select(v => v == UnsetValue ? replaceValue : v).ToArray()
                 );
             else
-                return string.Format(format, values is object[] v ? v : [.. values]);
+                return string.Format(culture, format, values.ToArray());
         }
         else
         {
@@ -51,11 +54,12 @@ public class StringFormatMultiConverter : MultiValueConverterBase
             var temp = values.Skip(1);
             if (replaceValue is not null)
                 return string.Format(
+                    culture,
                     format,
                     temp.Select(v => v == UnsetValue ? replaceValue : v).ToArray()
                 );
             else
-                return string.Format(format, temp.ToArray());
+                return string.Format(culture, format, temp.ToArray());
         }
     }
 }

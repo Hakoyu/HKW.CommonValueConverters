@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HKW.CommonValueConverters;
+﻿namespace HKW.CommonValueConverters;
 
 /// <summary>
 /// 时区信息接口

@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.Numerics;
-using System.Windows;
 using HKW.HKWUtils;
 
 namespace HKW.CommonValueConverters;
@@ -30,7 +29,7 @@ namespace HKW.CommonValueConverters;
 /// </MultiBinding>
 /// ]]></code></para>
 /// </summary>
-/// <exception cref="Exception">绑定的数量不正确</exception>
+/// <exception cref="ConverterException">绑定的数量不正确</exception>
 public class CalculatorMultiConverter<T> : MultiValueConverterBase
     where T : struct, INumber<T>
 {
@@ -45,53 +44,71 @@ public class CalculatorMultiConverter<T> : MultiValueConverterBase
         if (values.Any(i => i == UnsetValue))
             return GetDefaultResult();
         if (values.Count == 1)
-            return values[0];
-        var result = (T)NumberUtils.ConvertTo<T>(values[0]);
+            return GetDefaultResult();
+        var result = (T)NumberUtils.ConvertTo<T>(values[0]!);
         if (parameter is string operators && string.IsNullOrWhiteSpace(operators) is false)
         {
-            if (operators.Length != values.Count - 1)
-                throw new Exception("Parameter error: operator must be one more than parameter");
-            for (int i = 1; i < values.Count - 1; i++)
-                result = (T)
-                    NumberUtils.Arithmetic<T>(
-                        result,
-                        NumberUtils.ConvertTo<T>(values[i]),
-                        operators[i - 1]
-                    );
-            result = (T)
-                NumberUtils.Arithmetic<T>(
-                    result,
-                    NumberUtils.ConvertTo<T>(values.Last()),
-                    operators.Last()
-                );
+            result = GetResult(values, operators, result);
         }
         else
         {
-            if (System.Convert.ToBoolean(values.Count & 1) is false)
-                throw new Exception("Parameter error: Incorrect quantity");
-            bool isNumber = false;
-            char currentOperator = '0';
-            for (int i = 1; i < values.Count - 1; i++)
-            {
-                if (isNumber is false)
-                {
-                    currentOperator = ((string)values[i]!)[0];
-                    isNumber = true;
-                }
-                else
-                {
-                    var value = NumberUtils.ConvertTo<T>(values[i]);
-                    result = (T)NumberUtils.Arithmetic<T>(result, value, currentOperator);
-                    isNumber = false;
-                }
-            }
+            result = GetResult(values, result);
+        }
+        return result;
+    }
+
+    private static T GetResult(IList<object?> values, string operators, T value)
+    {
+        var result = value;
+        if (operators.Length != values.Count - 1)
+            throw new ConverterException(
+                "Parameter error: operator must be one more than parameter"
+            );
+        for (int i = 1; i < values.Count - 1; i++)
+        {
             result = (T)
                 NumberUtils.Arithmetic<T>(
                     result,
-                    NumberUtils.ConvertTo<T>(values.Last()),
-                    currentOperator
+                    NumberUtils.ConvertTo<T>(values[i]!),
+                    operators[i - 1]
                 );
         }
+        result = (T)
+            NumberUtils.Arithmetic<T>(
+                result,
+                NumberUtils.ConvertTo<T>(values[^1]!),
+                operators.Last()
+            );
+        return result;
+    }
+
+    private static T GetResult(IList<object?> values, T value)
+    {
+        var result = value;
+        if (System.Convert.ToBoolean(values.Count & 1) is false)
+            throw new ConverterException("Parameter error: Incorrect quantity");
+        bool isNumber = false;
+        char currentOperator = '0';
+        for (int i = 1; i < values.Count - 1; i++)
+        {
+            if (isNumber is false)
+            {
+                currentOperator = ((string)values[i]!)[0];
+                isNumber = true;
+            }
+            else
+            {
+                var temp = NumberUtils.ConvertTo<T>(values[i]!);
+                result = (T)NumberUtils.Arithmetic<T>(result, temp, currentOperator);
+                isNumber = false;
+            }
+        }
+        result = (T)
+            NumberUtils.Arithmetic<T>(
+                result,
+                NumberUtils.ConvertTo<T>(values[^1]!),
+                currentOperator
+            );
         return result;
     }
 }

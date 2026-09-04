@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace HKW.CommonValueConverters;
+﻿namespace HKW.CommonValueConverters;
 
 /// <summary>
 /// 首选文化

@@ -18,5 +18,5 @@ public enum StringCheckType
     /// <summary>
     /// 空或空白字符
     /// </summary>
-    NullOrWhiteSpace
+    NullOrWhiteSpace,
 }

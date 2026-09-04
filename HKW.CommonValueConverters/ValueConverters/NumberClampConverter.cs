@@ -1,7 +1,5 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Numerics;
-using System.Windows;
 using HKW.HKWUtils;
 using HKW.HKWUtils.Extensions;
 
@@ -34,7 +32,7 @@ public class NumberClampConverter<T> : ValueConverterBase
         CultureInfo? culture
     )
     {
-        if (value is not T number1)
+        if (value is not T)
             return GetDefaultResult();
         object min = GetMinValue();
         object max = GetMaxValue();

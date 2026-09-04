@@ -1,13 +1,11 @@
-﻿using System;
-using System.Globalization;
-using System.Windows;
+﻿using System.Globalization;
 
 namespace HKW.CommonValueConverters;
 
 /// <summary>
 /// 字符串是null或者空转换器
 /// </summary>
-public class StringIsNullOrEmptyOrWhiteSpaceConverter : InvertibleValueConverterBase
+public class StringCheckConverter : InvertibleValueConverterBase
 {
     /// <summary>
     /// 字符串检查类型
@@ -26,7 +24,7 @@ public class StringIsNullOrEmptyOrWhiteSpaceConverter : InvertibleValueConverter
         if (Enum.TryParse<StringCheckType>(parameter?.ToString(), out var checkType) is false)
             checkType = GetStringCheckType();
         if (checkType is StringCheckType.Null)
-            return value is null ^ isInverted;
+            return (value is null) ^ isInverted;
         else if (checkType is StringCheckType.NullOrEmpty)
             return string.IsNullOrEmpty(value?.ToString()) ^ isInverted;
         else if (checkType is StringCheckType.NullOrWhiteSpace)

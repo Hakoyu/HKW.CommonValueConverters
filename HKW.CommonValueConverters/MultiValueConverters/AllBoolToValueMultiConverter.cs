@@ -1,13 +1,11 @@
-﻿using System.ComponentModel;
-using System.Globalization;
-using System.Windows;
+﻿using System.Globalization;
 
 namespace HKW.CommonValueConverters;
 
 /// <summary>
 /// 全部为布尔值到值转换器
 /// </summary>
-public class AllBoolToValueMultiConverter<T> : InvertibleMultiValueConverterBase
+public class AllBoolToValueMultiConverter<T> : MultiValueConverterBase
 {
     /// <summary>
     /// 为真时的值
@@ -32,7 +30,6 @@ public class AllBoolToValueMultiConverter<T> : InvertibleMultiValueConverterBase
         CultureInfo? culture
     )
     {
-        var isInverted = GetIsInverted();
         var trueCount = 0;
         var falseCount = 0;
         var nullCount = 0;
@@ -46,11 +43,11 @@ public class AllBoolToValueMultiConverter<T> : InvertibleMultiValueConverterBase
             else if (value is false)
                 falseCount++;
         }
-        if (trueCount == values.Count ^ isInverted)
+        if (trueCount == values.Count)
             return GetTrueValue();
-        else if (falseCount == values.Count ^ isInverted)
+        else if (falseCount == values.Count)
             return GetFalseValue();
-        else if (nullCount == values.Count ^ isInverted)
+        else if (nullCount == values.Count)
             return GetNullValue();
         else
             return GetDefaultResult();

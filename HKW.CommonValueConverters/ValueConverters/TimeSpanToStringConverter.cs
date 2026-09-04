@@ -1,6 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.Windows;
+﻿using System.Globalization;
 
 namespace HKW.CommonValueConverters;
 
@@ -15,22 +13,12 @@ public class TimeSpanToStringConverter : ValueConverterBase
     protected const string DefaultFormat = "g";
 
     /// <summary>
-    /// 默认最小值
-    /// </summary>
-    protected const string DefaultMinValueString = "";
-
-    /// <summary>
     /// 时间格式化
     /// <para>
     /// 时间格式化参考s: https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-timespan-format-strings
     /// </para>
     /// </summary>
     public Func<string> GetFormat { get; set; } = () => DefaultFormat;
-
-    /// <summary>
-    /// 最小值
-    /// </summary>
-    public Func<string> GetMinValueString { get; set; } = () => DefaultMinValueString;
 
     /// <inheritdoc/>
     public override object? Convert(
@@ -42,12 +30,8 @@ public class TimeSpanToStringConverter : ValueConverterBase
     {
         if (value is not TimeSpan timeSpan)
             return GetDefaultResult();
-        if (timeSpan == TimeSpan.MinValue)
-        {
-            return GetMinValueString();
-        }
-
-        return timeSpan.ToString(GetFormat(), culture);
+        var format = parameter as string ?? GetFormat();
+        return timeSpan.ToString(format, culture);
     }
 
     /// <inheritdoc/>

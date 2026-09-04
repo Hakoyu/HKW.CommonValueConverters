@@ -7,7 +7,7 @@ namespace HKW.CommonValueConverters;
 /// <summary>
 /// 枚举到枚举信息转换器
 /// </summary>
-public class EnumToEnumInfoTargetConverter : ValueConverterBase
+public class EnumToEnumInfoDisplayConverter : ValueConverterBase
 {
     /// <summary>
     /// 枚举信息目标

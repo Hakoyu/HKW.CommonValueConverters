@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace HKW.CommonValueConverters;
 
@@ -26,21 +25,18 @@ public class StringCaseConverter : ValueConverterBase
         CultureInfo? culture
     )
     {
-        if (value is string stringValue)
+        if (value is not string stringValue)
+            return GetDefaultResult();
+        culture ??= CultureInfo.CurrentCulture;
+        return parameter?.ToString() switch
         {
-            culture ??= CultureInfo.CurrentCulture;
-            return parameter?.ToString() switch
-            {
-                // 大写
-                "U" or "u" => culture.TextInfo.ToUpper(stringValue),
-                // 小写
-                "L" or "l" => culture.TextInfo.ToLower(stringValue),
-                // 标题
-                "T" or "t" => culture.TextInfo.ToTitleCase(stringValue),
-                _ => GetDefaultResult(),
-            };
-        }
-
-        return null;
+            // 大写
+            "U" or "u" => culture.TextInfo.ToUpper(stringValue),
+            // 小写
+            "L" or "l" => culture.TextInfo.ToLower(stringValue),
+            // 标题
+            "T" or "t" => culture.TextInfo.ToTitleCase(stringValue),
+            _ => GetDefaultResult(),
+        };
     }
 }

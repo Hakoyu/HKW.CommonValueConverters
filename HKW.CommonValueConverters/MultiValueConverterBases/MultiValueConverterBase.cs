@@ -3,9 +3,8 @@
 namespace HKW.CommonValueConverters;
 
 /// <summary>
-/// 多个值转换器
+/// 多值转换器
 /// </summary>
-
 public abstract class MultiValueConverterBase : CommonConverterBase
 {
     /// <inheritdoc/>

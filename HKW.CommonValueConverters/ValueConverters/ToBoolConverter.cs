@@ -1,12 +1,12 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
+using HKW.CommonValueConverters;
 
 namespace HKW.CommonValueConverters;
 
 /// <summary>
-/// 值到集合转换器
+/// 字符串到布尔转换器
 /// </summary>
-public class ValueToEnumerableConverter : ValueConverterBase
+public class ToBoolConverter : ValueConverterBase
 {
     /// <inheritdoc/>
     public override object? Convert(
@@ -16,9 +16,6 @@ public class ValueToEnumerableConverter : ValueConverterBase
         CultureInfo? culture
     )
     {
-        if (value is not null)
-            return new object[] { value };
-
-        return null;
+        return ConverterUtils.GetBool(value);
     }
 }

@@ -1,9 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.11.35222.181
+# Visual Studio Version 18
+VisualStudioVersion = 18.9.12120.119 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HKW.CommonValueConverters", "HKW.CommonValueConverters\HKW.CommonValueConverters.csproj", "{A22B8FF1-69F8-4B76-A40C-9259D83C9E70}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{729E4EB5-A6C2-4321-9666-DF186C9FEFAA}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HKW.CommonValueConvertersTest", "HKW.CommonValueConvertersTest\HKW.CommonValueConvertersTest.csproj", "{DD5E1A77-8AB9-47FF-B0E5-B594C588113B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +22,10 @@ Global
 		{A22B8FF1-69F8-4B76-A40C-9259D83C9E70}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A22B8FF1-69F8-4B76-A40C-9259D83C9E70}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A22B8FF1-69F8-4B76-A40C-9259D83C9E70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD5E1A77-8AB9-47FF-B0E5-B594C588113B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD5E1A77-8AB9-47FF-B0E5-B594C588113B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD5E1A77-8AB9-47FF-B0E5-B594C588113B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD5E1A77-8AB9-47FF-B0E5-B594C588113B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using System.Globalization;
-using System.Windows;
+﻿using System.Globalization;
 
 namespace HKW.CommonValueConverters;
 
@@ -30,7 +28,7 @@ public class AllEqualsMultiConverter<T> : InvertibleMultiValueConverterBase
         var isInverted = GetIsInverted();
         var target = parameter is T t ? t : GetValue();
         if (GetIsStringEquals())
-            return values.All(x => x?.ToString() == target?.ToString() ^ isInverted);
-        return values.All(x => x?.Equals(target) is true ^ isInverted);
+            return values.All(x => x?.ToString() == target?.ToString()) ^ isInverted;
+        return values.All(x => x?.Equals(target) is true) ^ isInverted;
     }
 }

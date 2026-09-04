@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using System.Globalization;
-using System.Windows;
+﻿using System.Globalization;
 
 namespace HKW.CommonValueConverters;
 
@@ -42,6 +40,8 @@ public class BoolToValueConverter<T> : InvertibleValueConverterBase
         var isInverted = GetIsInverted();
         if (GetIsNullable() && value is null ^ isInverted)
             return GetNullValue();
-        return ConverterUtils.GetBool(value) ^ isInverted ? GetTrueValue() : GetFalseValue();
+        return (ConverterUtils.GetBool(value) is true) ^ isInverted
+            ? GetTrueValue()
+            : GetFalseValue();
     }
 }

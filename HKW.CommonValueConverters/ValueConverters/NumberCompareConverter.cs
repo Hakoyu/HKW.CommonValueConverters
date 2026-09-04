@@ -1,5 +1,4 @@
-﻿using System.Collections.Frozen;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Numerics;
 using HKW.HKWUtils;
 
@@ -24,7 +23,7 @@ public class NumberCompareConverter<T> : ValueConverterBase
         CultureInfo? culture
     )
     {
-        return NumberUtils.Compare<T>(value, parameter);
+        return NumberUtils.Compare<T>(value!, parameter!);
     }
 }
 
@@ -56,9 +55,9 @@ public class NumberCompareXConverter<T> : ValueConverterBase
         var comparisonType = GetComparisonType();
         if (parameter is string str && str.Length >= 2 && char.IsNumber(str[0]) is false)
         {
-            comparisonType = NumberUtils.GetComparisonOperatorType(str);
+            comparisonType = NumberUtils.GetComparisonOperatorType(str[0].ToString());
             parameter = str[(NumberUtils.ComparisonOperatorTypeByString[comparisonType].Length)..];
         }
-        return NumberUtils.CompareX<T>(value, parameter, comparisonType);
+        return NumberUtils.CompareX<T>(value!, parameter!, comparisonType);
     }
 }

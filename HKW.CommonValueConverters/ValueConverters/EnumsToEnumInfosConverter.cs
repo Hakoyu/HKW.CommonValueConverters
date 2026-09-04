@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Globalization;
-using HKW.HKWUtils;
 using HKW.HKWUtils.Extensions;
 
 namespace HKW.CommonValueConverters;
@@ -11,9 +10,9 @@ namespace HKW.CommonValueConverters;
 public class EnumsToEnumInfosConverter : ValueConverterBase
 {
     /// <summary>
-    /// 只显示有效值, 默认为 <see langword="true"/>
+    /// 只显示有效值
     /// </summary>
-    public Func<bool> GetOnlyValid { get; set; } = () => true;
+    public Func<bool> GetOnlyValid { get; set; } = () => false;
 
     /// <inheritdoc/>
     public override object? Convert(

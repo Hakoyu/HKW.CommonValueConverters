@@ -6,7 +6,6 @@ namespace HKW.CommonValueConverters;
 /// 相等值的数量转换器
 /// </summary>
 /// <typeparam name="T">值类型</typeparam>
-
 public class EqualsCountMultiConverter<T> : InvertibleMultiValueConverterBase
 {
     /// <summary>

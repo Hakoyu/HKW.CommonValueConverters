@@ -1,6 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.Windows;
+﻿using System.Globalization;
 
 namespace HKW.CommonValueConverters;
 
@@ -15,9 +13,9 @@ public class GuidToStringConverter : ValueConverterBase
     protected const string DefaultFormat = "D";
 
     /// <summary>
-    /// 转换为大写
+    /// 字符串改变, true 到大写, false 到小写, null 不变
     /// </summary>
-    public Func<bool> GetToUpper { get; set; } = () => false;
+    public Func<bool?> GetStringTo { get; set; } = () => null;
 
     /// <summary>
     /// 格式化
@@ -32,19 +30,19 @@ public class GuidToStringConverter : ValueConverterBase
         CultureInfo? culture
     )
     {
-        var defultResult = GetDefaultResult();
-        if (value is Guid guid)
-        {
-            var format = parameter as string ?? GetFormat();
-            var guidString = guid.ToString(format);
+        if (value is not Guid guid)
+            return GetDefaultResult();
 
-            if (GetToUpper())
-                return guidString.ToUpperInvariant();
+        var format = parameter as string ?? GetFormat();
+        var guidString = guid.ToString(format);
 
-            return guidString;
-        }
+        var stringTo = GetStringTo();
+        if (stringTo is true)
+            return guidString.ToUpperInvariant();
+        else if (stringTo is false)
+            return guidString.ToLowerInvariant();
 
-        return defultResult;
+        return guidString;
     }
 
     /// <inheritdoc/>

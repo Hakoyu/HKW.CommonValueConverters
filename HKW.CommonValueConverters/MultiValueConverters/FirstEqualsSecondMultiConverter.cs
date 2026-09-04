@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using System.Windows;
 
 namespace HKW.CommonValueConverters;
 
@@ -34,7 +33,7 @@ public class FirstEqualsSecondMultiConverter : InvertibleMultiValueConverterBase
         if (values.Count != 2)
             throw new NotImplementedException("Values length must be 2");
         if (GetIsStringEquals())
-            return values[0]?.ToString() == values[1]?.ToString() ^ isInverted;
-        return values[0]?.Equals(values[1]) ^ isInverted;
+            return (values[0]?.ToString() == values[1]?.ToString()) ^ isInverted;
+        return (values[0]?.Equals(values[1]) is true) ^ isInverted;
     }
 }

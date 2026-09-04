@@ -1,6 +1,4 @@
 ﻿using System.Globalization;
-using System.Windows;
-using HKW.CommonValueConverters;
 
 namespace HKW.CommonValueConverters;
 
@@ -8,7 +6,6 @@ namespace HKW.CommonValueConverters;
 /// 相等到值转换器
 /// </summary>
 /// <typeparam name="T">值类型</typeparam>
-
 public class EqualsToValueConverter<T> : InvertibleValueConverterBase
 {
     /// <summary>
@@ -55,9 +52,9 @@ public class EqualsToValueConverter<T> : InvertibleValueConverterBase
         if (GetIsNullable() && value is null ^ isInverted)
             return GetNullValue();
         if (GetIsStringEquals())
-            return value?.ToString() == parameter?.ToString() ^ isInverted
+            return (value?.ToString() == target?.ToString()) ^ isInverted
                 ? GetTrueValue()
                 : GetFalseValue();
-        return value?.Equals(target) is true ^ isInverted ? GetTrueValue() : GetFalseValue();
+        return (value?.Equals(target) is true) ^ isInverted ? GetTrueValue() : GetFalseValue();
     }
 }

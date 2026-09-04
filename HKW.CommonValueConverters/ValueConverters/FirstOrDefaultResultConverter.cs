@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Globalization;
 
 namespace HKW.CommonValueConverters;
@@ -21,11 +20,12 @@ public class FirstOrDefaultResultConverter : ValueConverterBase
         if (value is IEnumerable enumerable)
         {
             var enumerator = enumerable.GetEnumerator();
+            if (enumerator.MoveNext())
             {
-                if (enumerator.MoveNext())
-                {
-                    return enumerator.Current;
-                }
+                var result = enumerator.Current;
+                if (enumerator is IDisposable disposable)
+                    disposable.Dispose();
+                return result;
             }
         }
 

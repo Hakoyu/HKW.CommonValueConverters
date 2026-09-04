@@ -1,7 +1,4 @@
-﻿using System.Windows;
-using HKW.CommonValueConverters;
-
-namespace HKW.CommonValueConverters;
+﻿namespace HKW.CommonValueConverters;
 
 /// <summary>
 /// 可反转的值转换器基类

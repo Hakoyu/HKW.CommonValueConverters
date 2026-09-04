@@ -7,15 +7,16 @@ namespace HKW.CommonValueConverters;
 /// 第一个为布尔到值转换器
 /// /// <para>示例:
 /// <code><![CDATA[
-/// <MultiBinding Converter="{StaticResource FirstBoolToValueConverter}">
+/// <MultiBinding Converter="{StaticResource FirstBoolToValueMultiConverter}">
 ///   <Binding Path="BoolValue" />
 ///   <Binding Path="TrueValue" />
 ///   <Binding Path="FalueValue" /> // default is null
-///   <Binding Path="NullValue" /> // default is FalueValue
+///   <Binding Path="NullValue" />  // default is FalueValue
 /// </MultiBinding>
 /// ]]></code></para>
 /// </summary>
-public class FirstBoolToValueMultiConverter : InvertibleMultiValueConverterBase
+/// <exception cref="ArgumentException">Convert values 参数数量必须大于2</exception>
+public class FirstBoolToValueMultiConverter : MultiValueConverterBase
 {
     /// <inheritdoc/>
     /// <exception cref="NotImplementedException">参数数量必须为2或3</exception>
@@ -26,15 +27,14 @@ public class FirstBoolToValueMultiConverter : InvertibleMultiValueConverterBase
         CultureInfo? culture
     )
     {
-        var isInverted = GetIsInverted();
         if (values.Count < 2)
             throw new ArgumentException("Values count must be more than 2");
         var result = values[0];
-        if (result is true ^ isInverted)
+        if (result is true)
             return values[1];
-        else if (result is false ^ isInverted)
+        else if (result is false)
             return values.GetValueOrDefault(2);
-        else if (result is null ^ isInverted)
+        else if (result is null)
             return values.GetValueOrDefault(3);
         return GetDefaultResult();
     }

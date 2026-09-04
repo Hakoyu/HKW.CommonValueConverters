@@ -1,8 +1,8 @@
-﻿//using Avalonia.Controls;
-//using System;
+﻿//using System;
 //using System.Globalization;
+//using HKW.CommonValueConverters;
 
-//namespace HKW.HKWAvalonia.Converters;
+//namespace HKW.CommonValueConverters;
 
 ///// <summary>
 ///// StringToObjectConverter can be used to select different resources based on given string name.
@@ -20,20 +20,20 @@
 ///// </example>
 ///// Source: http://stackoverflow.com/questions/2787725/how-to-display-different-enum-icons-using-xaml-only
 ///// </summary>
-//public class StringToObjectConverter : ValueConverterBase<StringToObjectConverter>
+//public class StringToObjectConverter : ValueConverterBase
 //{
-//    public ResourceDictionary Items { get; set; }
+//    public Dictionary<string, object> Items { get; set; }
 
 //    public override object? Convert(
-//        object value,
-//        Type targetType,
-//        object parameter,
-//        CultureInfo culture
+//        object? value,
+//        Type? targetType,
+//        object? parameter,
+//        CultureInfo? culture
 //    )
 //    {
 //        if (value is string key && Items?.TryGetValue(key, out var item) is true)
 //            return item;
 
-//        return null;
+//        return GetDefaultResult();
 //    }
 //}

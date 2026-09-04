@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HKW.CommonValueConverters;
 
@@ -19,7 +14,7 @@ namespace HKW.CommonValueConverters;
 /// result: Dictionary[Key]
 /// ]]></code></para>
 /// </summary>
-public class GetDictionaryValueMulitiConverter : MultiValueConverterBase
+public class GetDictionaryValueMultiConverter : MultiValueConverterBase
 {
     /// <inheritdoc/>
     public override object? Convert(
@@ -29,15 +24,15 @@ public class GetDictionaryValueMulitiConverter : MultiValueConverterBase
         CultureInfo? culture
     )
     {
-        var defultResult = GetDefaultResult();
+        var defaultResult = GetDefaultResult();
         if (value.Count != 2)
-            return defultResult;
+            return defaultResult;
         if (value[0] is not IDictionary dictionary)
-            return defultResult;
+            return defaultResult;
         if (value[1] is null)
-            return defultResult;
+            return defaultResult;
         if (dictionary.Contains(value[1]!) is false)
-            return defultResult;
+            return defaultResult;
         return dictionary[value[1]!];
     }
 }

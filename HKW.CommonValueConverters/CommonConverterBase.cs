@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Globalization;
 
 namespace HKW.CommonValueConverters;
@@ -7,7 +6,7 @@ namespace HKW.CommonValueConverters;
 /// <summary>
 ///  通用附加属性
 /// </summary>
-public class CommonDependencyProperty<T>(object dependencyProperty)
+public class CommonDependencyProperty(object dependencyProperty)
 {
     /// <summary>
     ///  附加属性
@@ -31,7 +30,7 @@ public interface ICommonValueConverter
     /// <typeparam name="T">值类型</typeparam>
     /// <param name="dependencyProperty">附加属性</param>
     /// <returns>值</returns>
-    public T GetValue<T>(CommonDependencyProperty<T> dependencyProperty);
+    public T GetValue<T>(CommonDependencyProperty dependencyProperty);
 
     /// <summary>
     /// 设置值
@@ -39,7 +38,7 @@ public interface ICommonValueConverter
     /// <typeparam name="T">值类型</typeparam>
     /// <param name="dependencyProperty">附加属性</param>
     /// <param name="value">值</param>
-    public void SetValue<T>(CommonDependencyProperty<T> dependencyProperty, T value);
+    public void SetValue<T>(CommonDependencyProperty dependencyProperty, T value);
 }
 
 /// <summary>
@@ -76,12 +75,12 @@ public abstract class CommonConverterBase : ICommonValueConverter
         set => _preferredCulture = value;
     }
 
-    T ICommonValueConverter.GetValue<T>(CommonDependencyProperty<T> dependencyProperty)
+    T ICommonValueConverter.GetValue<T>(CommonDependencyProperty dependencyProperty)
     {
         throw new NotImplementedException();
     }
 
-    void ICommonValueConverter.SetValue<T>(CommonDependencyProperty<T> dependencyProperty, T value)
+    void ICommonValueConverter.SetValue<T>(CommonDependencyProperty dependencyProperty, T value)
     {
         throw new NotImplementedException();
     }

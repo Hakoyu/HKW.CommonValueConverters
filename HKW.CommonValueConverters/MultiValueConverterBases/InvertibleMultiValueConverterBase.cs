@@ -1,11 +1,8 @@
-﻿using System.Windows;
-
-namespace HKW.CommonValueConverters;
+﻿namespace HKW.CommonValueConverters;
 
 /// <summary>
 /// 可反转的多值转换器
 /// </summary>
-
 public abstract class InvertibleMultiValueConverterBase : MultiValueConverterBase
 {
     /// <summary>

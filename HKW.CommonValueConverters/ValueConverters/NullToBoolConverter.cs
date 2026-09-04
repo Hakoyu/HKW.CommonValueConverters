@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace HKW.CommonValueConverters;
 
@@ -17,6 +15,6 @@ public class NullToBoolConverter : InvertibleValueConverterBase
         CultureInfo? culture
     )
     {
-        return value == null ^ GetIsInverted();
+        return (value is null) ^ GetIsInverted();
     }
 }

@@ -1,15 +1,14 @@
-﻿using System;
-using System.Threading;
-
-namespace HKW.CommonValueConverters;
+﻿namespace HKW.CommonValueConverters;
 
 /// <summary>
 /// 系统时区信息
 /// </summary>
 public class SystemTimeZoneInfo : ITimeZoneInfo
 {
-    private static readonly Lazy<ITimeZoneInfo> _current =
-        new(() => new SystemTimeZoneInfo(), LazyThreadSafetyMode.PublicationOnly);
+    private static readonly Lazy<ITimeZoneInfo> _current = new(
+        () => new SystemTimeZoneInfo(),
+        LazyThreadSafetyMode.PublicationOnly
+    );
 
     /// <summary>
     /// 当前时区
