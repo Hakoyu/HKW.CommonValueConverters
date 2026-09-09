@@ -6,12 +6,12 @@ namespace HKW.CommonValueConverters;
 /// 相等到值转换器
 /// </summary>
 /// <typeparam name="T">值类型</typeparam>
-public class EqualsToValueConverter<T> : InvertibleValueConverterBase
+public class EqualsToValueConverter<T> : ValueConverterBase
 {
     /// <summary>
-    /// 目标值
+    /// 比较值
     /// </summary>
-    public Func<object?> GetTargetValue { get; set; } = () => default;
+    public Func<object?> GetOther { get; set; } = () => default;
 
     /// <summary>
     /// 真值
@@ -24,13 +24,7 @@ public class EqualsToValueConverter<T> : InvertibleValueConverterBase
     public Func<T> GetFalseValue { get; set; } = () => default!;
 
     /// <summary>
-    /// 是可为空的
-    /// </summary>
-    public Func<bool> GetIsNullable { get; set; } = () => false;
-
-    /// <summary>
     /// 空值
-    /// <para>只有 <see cref="GetIsNullable"/> 返回 <see langword="true"/> 时, 才对value进行判断并返回此方法的结果</para>
     /// </summary>
     public Func<T> GetNullValue { get; set; } = () => default!;
 
@@ -47,14 +41,11 @@ public class EqualsToValueConverter<T> : InvertibleValueConverterBase
         CultureInfo? culture
     )
     {
-        var target = parameter ?? GetTargetValue();
-        var isInverted = GetIsInverted();
-        if (GetIsNullable() && value is null ^ isInverted)
+        var target = parameter ?? GetOther();
+        if (value is null)
             return GetNullValue();
         if (GetIsStringEquals())
-            return (value?.ToString() == target?.ToString()) ^ isInverted
-                ? GetTrueValue()
-                : GetFalseValue();
-        return (value?.Equals(target) is true) ^ isInverted ? GetTrueValue() : GetFalseValue();
+            return value.ToString() == target?.ToString() ? GetTrueValue() : GetFalseValue();
+        return value.Equals(target) ? GetTrueValue() : GetFalseValue();
     }
 }

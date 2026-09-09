@@ -27,7 +27,7 @@ public class EnumsToEnumInfosConverter : ValueConverterBase
             return defultResult;
         var @enum = enums.Cast<Enum>().First();
         if (GetOnlyValid())
-            return @enum.GetInfo().ValidInfos.Values;
-        return @enum.GetInfo().Infos.Values;
+            return @enum.GetInfo().ValidInfoDictionary.Values;
+        return @enum.GetInfo().InfoDictionary.Values;
     }
 }

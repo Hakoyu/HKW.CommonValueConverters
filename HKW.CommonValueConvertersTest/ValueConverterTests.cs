@@ -161,7 +161,17 @@ public sealed class ValueConverterTests
     [TestMethod]
     public void EqualsConverter()
     {
-        var c = new EqualsConverter<string>() { GetValue = () => "Value" };
+        var c = new EqualsConverter();
+
+        Assert.AreEqual(false, c.Convert("Other", null, null, null));
+        Assert.AreEqual(true, c.Convert("Parameter", null, "Parameter", null));
+        Assert.AreEqual(true, c.Convert(null, null, null, null));
+    }
+
+    [TestMethod]
+    public void EqualsConverter_GetOther()
+    {
+        var c = new EqualsConverter() { GetOther = () => "Value" };
 
         Assert.AreEqual(true, c.Convert("Value", null, null, null));
         Assert.AreEqual(false, c.Convert("Other", null, null, null));
@@ -173,11 +183,10 @@ public sealed class ValueConverterTests
     {
         var c = new EqualsToValueConverter<string>()
         {
-            GetTargetValue = () => "Target",
+            GetOther = () => "Target",
             GetTrueValue = () => "True",
             GetFalseValue = () => "False",
             GetNullValue = () => "Null",
-            GetIsNullable = () => true,
         };
 
         Assert.AreEqual("True", c.Convert("Target", null, null, null));
