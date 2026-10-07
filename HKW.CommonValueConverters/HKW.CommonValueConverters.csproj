@@ -25,11 +25,6 @@
     >
   </PropertyGroup>
 
-  <!--<ItemGroup>
-    <Reference Include="HKW.Utils">
-      <HintPath>..\..\HKW.Utils\HKW.Utils\bin\Debug\net10.0\HKW.Utils.dll</HintPath>
-    </Reference>
-  </ItemGroup>-->
   <ItemGroup>
     <PackageReference Include="HKW.Utils" Version="1.4.0" />
   </ItemGroup>

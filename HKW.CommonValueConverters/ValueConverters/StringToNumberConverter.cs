@@ -11,14 +11,14 @@ namespace HKW.CommonValueConverters;
 public class StringToNumberConverter : ValueConverterBase
 {
     /// <summary>
-    /// 默认格式化
+    /// 默认数字风格
     /// </summary>
     public const NumberStyles DefaultNumberStyles = NumberStyles.Any;
 
     /// <summary>
     /// 获取数字风格
     /// </summary>
-    private Func<NumberStyles> GetNumberStyles { get; } = () => DefaultNumberStyles;
+    public Func<NumberStyles> GetNumberStyles { get; set; } = () => DefaultNumberStyles;
 
     /// <summary>
     /// 默认数值类型
@@ -38,7 +38,15 @@ public class StringToNumberConverter : ValueConverterBase
         CultureInfo? culture
     )
     {
-        if (int.TryParse(value?.ToString(), GetNumberStyles(), culture, out var result))
+        if (
+            NumberUtils.TryParse(
+                GetNumberType(),
+                value?.ToString(),
+                GetNumberStyles(),
+                culture,
+                out var result
+            )
+        )
             return result;
         else
             return GetDefaultResult();
