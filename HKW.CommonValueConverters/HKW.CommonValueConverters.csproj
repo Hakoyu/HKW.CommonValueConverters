@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>0.2.0</Version>
+    <Version>0.2.1</Version>
     <Authors>HKW</Authors>
     <Company>HKW</Company>
     <PackageDescription>A common value or multi value converter base.</PackageDescription>
