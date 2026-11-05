@@ -21,17 +21,15 @@ public class EnumToEnumInfoDisplayConverter : ValueConverterBase
         () => EnumInfoDisplayTarget.Name;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        var defultResult = GetDefaultResult();
         if (value is not Enum @enum)
-            return defultResult;
-        var type = value.GetType();
+            return GetDefaultResult();
         return @enum.GetDisplayInfo(GetEnumInfoDisplayTarget());
     }
 }

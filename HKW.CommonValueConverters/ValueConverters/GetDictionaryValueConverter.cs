@@ -9,20 +9,18 @@ namespace HKW.CommonValueConverters;
 public class GetDictionaryValueConverter : ValueConverterBase
 {
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        var defultResult = GetDefaultResult();
-        if (value is not IDictionary dictionary)
-            return defultResult;
-        if (parameter is null)
-            return defultResult;
-        if (dictionary.Contains(parameter) is false)
-            return defultResult;
-        return dictionary[parameter];
+        if (value is not IDictionary dictionary || parameter is null || ConverterUtils.IsUnavailable(parameter))
+            return GetDefaultResult();
+        if (!dictionary.Contains(parameter))
+            return GetDefaultResult();
+        var result = dictionary[parameter];
+        return ConverterUtils.IsUnavailable(result) ? GetDefaultResult() : result;
     }
 }

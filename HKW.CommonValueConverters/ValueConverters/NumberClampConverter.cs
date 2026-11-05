@@ -24,27 +24,31 @@ public class NumberClampConverter : ValueConverterBase
     public Func<NumberType> GetNumberType { get; set; } = static () => DefaultNumberType;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        if (value is null)
-            return GetDefaultResult();
         var numberType = GetNumberType();
+        if (ConverterUtils.IsUnavailable(parameter)
+            || !ConverterUtils.TryNumber(value, numberType, culture, out var number))
+            return GetDefaultResult();
         object min = NumberUtils.GetDefault(numberType);
         object max = NumberUtils.GetDefault(numberType);
         if (parameter is string str)
         {
             var split = str.Split(',');
-            min = NumberUtils.ConvertTo(split[0], numberType);
-            max = NumberUtils.ConvertTo(split[1], numberType);
+            if (split.Length != 2
+                || !ConverterUtils.TryNumber(split[0], numberType, culture, out min)
+                || !ConverterUtils.TryNumber(split[1], numberType, culture, out max)
+                || NumberUtils.CompareBy(min, max, numberType, ComparisonOperatorType.GreaterThan) is true)
+                return GetDefaultResult();
         }
-        return NumberUtils.CompareBy(value, min, numberType, ComparisonOperatorType.LessThan)
+        return NumberUtils.CompareBy(number, min, numberType, ComparisonOperatorType.LessThan)
                 is false
-            && NumberUtils.CompareBy(value, max, numberType, ComparisonOperatorType.GreaterThan)
+            && NumberUtils.CompareBy(number, max, numberType, ComparisonOperatorType.GreaterThan)
                 is false;
     }
 }

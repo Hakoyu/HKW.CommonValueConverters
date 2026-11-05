@@ -5,7 +5,6 @@
     <Company>HKW</Company>
     <PackageDescription>A common value or multi value converter base.</PackageDescription>
     <PackageTags>Converter</PackageTags>
-    <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -26,7 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HKW.Utils" Version="1.4.0" />
+    <PackageReference Include="HKW.Utils" Version="1.4.1" />
   </ItemGroup>
 
   <ItemGroup>

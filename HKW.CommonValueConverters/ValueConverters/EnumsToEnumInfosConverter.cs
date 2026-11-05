@@ -15,17 +15,15 @@ public class EnumsToEnumInfosConverter : ValueConverterBase
     public Func<bool> GetOnlyValid { get; set; } = () => false;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        var defultResult = GetDefaultResult();
-        if (value is not IEnumerable enums)
-            return defultResult;
-        var @enum = enums.Cast<Enum>().First();
+        if (value is not IEnumerable enums || enums.Cast<object?>().FirstOrDefault() is not Enum @enum)
+            return GetDefaultResult();
         if (GetOnlyValid())
             return @enum.GetInfo().ValidInfoDictionary.Values;
         return @enum.GetInfo().InfoDictionary.Values;

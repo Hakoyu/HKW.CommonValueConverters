@@ -17,22 +17,19 @@ namespace HKW.CommonValueConverters;
 public class GetDictionaryValueMultiConverter : MultiValueConverterBase
 {
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         IList<object?> value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        var defaultResult = GetDefaultResult();
-        if (value.Count != 2)
-            return defaultResult;
-        if (value[0] is not IDictionary dictionary)
-            return defaultResult;
-        if (value[1] is null)
-            return defaultResult;
-        if (dictionary.Contains(value[1]!) is false)
-            return defaultResult;
-        return dictionary[value[1]!];
+        if (ConverterUtils.HasUnavailable(value) || value.Count != 2
+            || value[0] is not IDictionary dictionary || value[1] is null)
+            return GetDefaultResult();
+        if (!dictionary.Contains(value[1]!))
+            return GetDefaultResult();
+        var result = dictionary[value[1]!];
+        return ConverterUtils.IsUnavailable(result) ? GetDefaultResult() : result;
     }
 }

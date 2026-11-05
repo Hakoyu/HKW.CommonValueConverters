@@ -14,29 +14,23 @@ public class EnumEqualsConverter : ValueConverterBase
     }
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        var defultResult = GetDefaultResult();
-        if (value is null)
-            return defultResult;
+        if (value is not Enum || ConverterUtils.IsUnavailable(parameter))
+            return GetDefaultResult();
         if (parameter is string str)
         {
-            var enumType = value.GetType();
-            if (Enum.TryParse(enumType, str, out var parameterValue) is false)
-                return defultResult;
-
-            return parameterValue?.Equals(value) is true;
+            if (!Enum.TryParse(value.GetType(), str, out var parameterValue))
+                return GetDefaultResult();
+            return Equals(parameterValue, value);
         }
-        else if (parameter is Enum @enum)
-        {
+        if (parameter is Enum @enum)
             return value.Equals(@enum);
-        }
-
-        return defultResult;
+        return GetDefaultResult();
     }
 }

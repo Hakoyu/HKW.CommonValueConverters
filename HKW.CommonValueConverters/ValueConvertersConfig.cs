@@ -21,14 +21,14 @@ public static class ValueConvertersConfig
     /// <returns>文化</returns>
     public static CultureInfo SelectCulture(
         PreferredCulture preferredCulture,
-        Func<CultureInfo> converterCulture
+        CultureInfo? converterCulture
     )
     {
         return preferredCulture switch
         {
             PreferredCulture.CurrentCulture => CultureInfo.CurrentCulture,
             PreferredCulture.CurrentUICulture => CultureInfo.CurrentUICulture,
-            _ => converterCulture(),
+            _ => converterCulture ?? CultureInfo.CurrentCulture,
         };
     }
 }

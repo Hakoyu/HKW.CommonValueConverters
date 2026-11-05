@@ -31,17 +31,19 @@ public class StringToNumberConverter : ValueConverterBase
     public Func<NumberType> GetNumberType { get; set; } = () => DefaultNumberType;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
+        if (ConverterUtils.IsUnavailable(value))
+            return GetDefaultResult();
         if (
             NumberUtils.TryParse(
                 GetNumberType(),
-                value?.ToString(),
+                value is IFormattable formattable ? formattable.ToString(null, culture) : value?.ToString(),
                 GetNumberStyles(),
                 culture,
                 out var result
@@ -53,13 +55,15 @@ public class StringToNumberConverter : ValueConverterBase
     }
 
     /// <inheritdoc/>
-    public override object? ConvertBack(
+    protected override object? ConvertBackCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        return value?.ToString();
+        if (ConverterUtils.IsUnavailable(value))
+            return GetDefaultResult();
+        return value is IFormattable formattable ? formattable.ToString(null, culture) : value?.ToString();
     }
 }

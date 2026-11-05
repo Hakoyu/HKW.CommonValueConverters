@@ -10,32 +10,27 @@ namespace HKW.CommonValueConverters;
 /// <MultiBinding Converter="{StaticResource FirstBoolToValueMultiConverter}">
 ///   <Binding Path="BoolValue" />
 ///   <Binding Path="TrueValue" />
-///   <Binding Path="FalueValue" /> // default is null
-///   <Binding Path="NullValue" />  // default is FalueValue
+///   <Binding Path="FalseValue" />
+///   <Binding Path="NullValue" />
 /// </MultiBinding>
 /// ]]></code></para>
 /// </summary>
-/// <exception cref="ArgumentException">Convert values 参数数量必须大于2</exception>
+/// <remarks>缺失或未就绪的选中分支返回默认结果。</remarks>
 public class FirstBoolToValueMultiConverter : MultiValueConverterBase
 {
     /// <inheritdoc/>
-    /// <exception cref="NotImplementedException">参数数量必须为2或3</exception>
-    public override object? Convert(
+    protected override object? ConvertCore(
         IList<object?> values,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        if (values.Count < 2)
-            throw new ArgumentException("Values count must be more than 2");
-        var result = values[0];
-        if (result is true)
-            return values[1];
-        else if (result is false)
-            return values.GetValueOrDefault(2);
-        else if (result is null)
-            return values.GetValueOrDefault(3);
-        return GetDefaultResult();
+        if (values is null || values.Count == 0)
+            return GetDefaultResult();
+        var index = values[0] switch { true => 1, false => 2, null => 3, _ => -1 };
+        if (index < 0 || index >= values.Count || ConverterUtils.IsUnavailable(values[index]))
+            return GetDefaultResult();
+        return values[index];
     }
 }

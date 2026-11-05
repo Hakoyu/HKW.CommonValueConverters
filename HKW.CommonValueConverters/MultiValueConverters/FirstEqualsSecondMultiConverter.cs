@@ -21,19 +21,19 @@ public class FirstEqualsSecondMultiConverter : InvertibleMultiValueConverterBase
     public Func<bool> GetIsStringEquals { get; set; } = () => default!;
 
     /// <inheritdoc/>
-    /// <exception cref="NotImplementedException">参数必须为2</exception>
-    public override object? Convert(
+    /// <remarks>输入必须为两个已就绪的值，否则返回默认结果。</remarks>
+    protected override object? ConvertCore(
         IList<object?> values,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
         var isInverted = GetIsInverted();
-        if (values.Count != 2)
-            throw new NotImplementedException("Values length must be 2");
+        if (ConverterUtils.HasUnavailable(values) || values.Count != 2)
+            return GetDefaultResult();
         if (GetIsStringEquals())
             return (values[0]?.ToString() == values[1]?.ToString()) ^ isInverted;
-        return (values[0]?.Equals(values[1]) is true) ^ isInverted;
+        return Equals(values[0], values[1]) ^ isInverted;
     }
 }

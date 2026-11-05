@@ -21,37 +21,43 @@ public class TimeSpanToStringConverter : ValueConverterBase
     public Func<string> GetFormat { get; set; } = () => DefaultFormat;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        if (value is not TimeSpan timeSpan)
+        if (value is not TimeSpan timeSpan || ConverterUtils.IsUnavailable(parameter))
             return GetDefaultResult();
         var format = parameter as string ?? GetFormat();
-        return timeSpan.ToString(format, culture);
+        try
+        {
+            return timeSpan.ToString(format, culture);
+        }
+        catch (FormatException) when (culture.GetType() == typeof(CultureInfo))
+        {
+            return GetDefaultResult();
+        }
     }
 
     /// <inheritdoc/>
-    public override object? ConvertBack(
+    protected override object? ConvertBackCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
+        if (ConverterUtils.IsUnavailable(parameter))
+            return GetDefaultResult();
         if (value is TimeSpan timeSpan)
-        {
             return timeSpan;
-        }
-
-        if (value is string str && TimeSpan.TryParse(str, out var resultTimeSpan))
-        {
-            return resultTimeSpan;
-        }
-
-        return GetDefaultResult();
+        if (value is not string str)
+            return GetDefaultResult();
+        var format = parameter as string ?? GetFormat();
+        return TimeSpan.TryParseExact(str, format, culture, out var resultTimeSpan)
+            || TimeSpan.TryParse(str, culture, out resultTimeSpan)
+            ? resultTimeSpan : GetDefaultResult();
     }
 }

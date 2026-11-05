@@ -23,13 +23,15 @@ public class AllBoolToValueMultiConverter<T> : MultiValueConverterBase
     public Func<T> GetNullValue { get; set; } = () => default!;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         IList<object?> values,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
+        if (ConverterUtils.HasUnavailable(values))
+            return GetDefaultResult();
         var trueCount = 0;
         var falseCount = 0;
         var nullCount = 0;

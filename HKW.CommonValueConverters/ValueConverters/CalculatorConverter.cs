@@ -37,15 +37,19 @@ public class CalculatorConverter : ValueConverterBase
         () => DefaultArithmeticOperatorType;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        if (value == UnsetValue || parameter == UnsetValue)
+        var numberType = GetNumberType();
+        var operation = GetOperatorType();
+        if (!ConverterUtils.TryNumber(value, numberType, culture, out var left)
+            || !ConverterUtils.TryNumber(parameter, numberType, culture, out var right))
             return GetDefaultResult();
-        return NumberUtils.Arithmetic(value!, parameter!, GetNumberType(), GetOperatorType());
+        return ConverterUtils.TryArithmetic(left, right, numberType, operation, out var result)
+            ? result : GetDefaultResult();
     }
 }

@@ -9,26 +9,26 @@ namespace HKW.CommonValueConverters;
 public class FirstOrDefaultConverter : ValueConverterBase
 {
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        var defaultResult = GetDefaultResult();
-        if (value is IEnumerable enumerable)
+        if (value is not IEnumerable enumerable)
+            return GetDefaultResult();
+        var enumerator = enumerable.GetEnumerator();
+        try
         {
-            var enumerator = enumerable.GetEnumerator();
-            if (enumerator.MoveNext())
-            {
-                var result = enumerator.Current;
-                if (enumerator is IDisposable disposable)
-                    disposable.Dispose();
-                return result;
-            }
+            if (!enumerator.MoveNext())
+                return GetDefaultResult();
+            var result = enumerator.Current;
+            return ConverterUtils.IsUnavailable(result) ? GetDefaultResult() : result;
         }
-
-        return defaultResult;
+        finally
+        {
+            (enumerator as IDisposable)?.Dispose();
+        }
     }
 }

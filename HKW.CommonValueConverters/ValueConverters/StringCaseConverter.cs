@@ -18,16 +18,15 @@ namespace HKW.CommonValueConverters;
 public class StringCaseConverter : ValueConverterBase
 {
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        if (value is not string stringValue)
+        if (value is not string stringValue || ConverterUtils.IsUnavailable(parameter))
             return GetDefaultResult();
-        culture ??= CultureInfo.CurrentCulture;
         return parameter?.ToString() switch
         {
             // 大写

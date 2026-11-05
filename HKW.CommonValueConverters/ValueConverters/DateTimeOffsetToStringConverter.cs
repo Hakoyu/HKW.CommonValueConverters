@@ -32,33 +32,52 @@ public class DateTimeOffsetToStringConverter : ValueConverterBase
     public Func<string> GetFormat { get; set; } = () => DefaultFormat;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        if (value is not DateTimeOffset dateTimeOffset)
+        if (value is not DateTimeOffset dateTimeOffset || ConverterUtils.IsUnavailable(parameter))
             return GetDefaultResult();
 
         var format = parameter as string ?? GetFormat();
-        return TimeZoneInfo.ConvertTime(dateTimeOffset, _timeZone.Local).ToString(format, culture);
+        var local = TimeZoneInfo.ConvertTime(dateTimeOffset, _timeZone.Local);
+        try
+        {
+            return local.ToString(format, culture);
+        }
+        catch (FormatException) when (culture.GetType() == typeof(CultureInfo))
+        {
+            return GetDefaultResult();
+        }
     }
 
     /// <inheritdoc/>
-    public override object? ConvertBack(
+    protected override object? ConvertBackCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        if (value is string str && DateTimeOffset.TryParse(str, out var parsedDateTimeOffset))
+        if (value is not string str || ConverterUtils.IsUnavailable(parameter))
+            return GetDefaultResult();
+        var format = parameter as string ?? GetFormat();
+        DateTimeOffset parsedDateTimeOffset;
+        bool parsed;
+        try
         {
-            return TimeZoneInfo.ConvertTime(parsedDateTimeOffset, _timeZone.Utc);
+            parsed = DateTimeOffset.TryParseExact(str, format, culture, DateTimeStyles.None, out parsedDateTimeOffset)
+                || DateTimeOffset.TryParse(str, culture, DateTimeStyles.None, out parsedDateTimeOffset);
         }
-
-        return GetDefaultResult();
+        catch (FormatException) when (culture.GetType() == typeof(CultureInfo))
+        {
+            return GetDefaultResult();
+        }
+        if (!parsed)
+            return GetDefaultResult();
+        return TimeZoneInfo.ConvertTime(parsedDateTimeOffset, _timeZone.Utc);
     }
 }

@@ -47,7 +47,7 @@ public sealed class ValueConverterTests
         Assert.AreEqual("True", c.Convert(true, null, "True,False,Null", null));
         Assert.AreEqual("False", c.Convert(false, null, "True,False,Null", null));
         Assert.AreEqual("Null", c.Convert(null, null, "True,False,Null", null));
-        Assert.IsNull(c.Convert(true, null, null, null));
+        Assert.AreSame(ConverterResults.UnsetValue, c.Convert(true, null, null, null));
     }
 
     [TestMethod]
@@ -58,7 +58,7 @@ public sealed class ValueConverterTests
         Assert.AreEqual("True", c.Convert(true, null, "True False Null", null));
         Assert.AreEqual("False", c.Convert(false, null, "True False Null", null));
         Assert.AreEqual("Null", c.Convert(null, null, "True False Null", null));
-        Assert.IsNull(c.Convert(true, null, null, null));
+        Assert.AreSame(ConverterResults.UnsetValue, c.Convert(true, null, null, null));
     }
 
     [TestMethod]
@@ -146,7 +146,7 @@ public sealed class ValueConverterTests
         Assert.IsNotNull(
             c.Convert(new[] { TestEnumType.First, TestEnumType.Second }, null, null, null)
         );
-        Assert.IsNull(c.Convert(null, null, null, null));
+        Assert.AreSame(ConverterResults.UnsetValue, c.Convert(null, null, null, null));
     }
 
     [TestMethod]
@@ -155,7 +155,7 @@ public sealed class ValueConverterTests
         var c = new EnumToEnumInfoDisplayConverter();
 
         Assert.IsNotNull(c.Convert(TestEnumType.First, null, null, null));
-        Assert.IsNull(c.Convert("First", null, null, null));
+        Assert.AreSame(ConverterResults.UnsetValue, c.Convert("First", null, null, null));
     }
 
     [TestMethod]
@@ -275,7 +275,7 @@ public sealed class ValueConverterTests
         Assert.AreEqual("VALUE", c.Convert("value", null, "U", CultureInfo.InvariantCulture));
         Assert.AreEqual("value", c.Convert("VALUE", null, "L", CultureInfo.InvariantCulture));
         Assert.AreEqual("Value", c.Convert("value", null, "T", CultureInfo.InvariantCulture));
-        Assert.IsNull(c.Convert("value", null, "Unknown", CultureInfo.InvariantCulture));
+        Assert.AreSame(ConverterResults.UnsetValue, c.Convert("value", null, "Unknown", CultureInfo.InvariantCulture));
     }
 
     [TestMethod]
@@ -307,7 +307,7 @@ public sealed class ValueConverterTests
 
         Assert.AreEqual("1.2.3.4", c.Convert(value, null, null, null));
         Assert.AreEqual("1.2", c.Convert(value, null, "2", null));
-        Assert.IsNull(c.Convert("1.2.3.4", null, null, null));
+        Assert.AreSame(ConverterResults.UnsetValue, c.Convert("1.2.3.4", null, null, null));
     }
 
     private enum TestEnumType

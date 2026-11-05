@@ -14,17 +14,20 @@ namespace HKW.CommonValueConverters;
 public class VersionToStringConverter : ValueConverterBase
 {
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        if (value is not Version version)
-            return null;
-        if (int.TryParse(parameter as string, out int fieldCount))
+        if (value is not Version version || ConverterUtils.IsUnavailable(parameter))
+            return GetDefaultResult();
+        if (int.TryParse(parameter as string, NumberStyles.Integer, culture, out int fieldCount))
         {
+            var availableFields = version.Revision >= 0 ? 4 : version.Build >= 0 ? 3 : 2;
+            if (fieldCount < 0 || fieldCount > availableFields)
+                return GetDefaultResult();
             return version.ToString(fieldCount);
         }
         return version.ToString();

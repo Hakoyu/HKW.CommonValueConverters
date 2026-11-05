@@ -30,17 +30,19 @@ public class BoolToValueConverter<T> : InvertibleValueConverterBase
     public Func<T> GetNullValue { get; set; } = () => default!;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
+        if (ConverterUtils.IsUnavailable(value))
+            return GetDefaultResult();
         var isInverted = GetIsInverted();
-        if (GetIsNullable() && value is null ^ isInverted)
+        if (GetIsNullable() && value is null)
             return GetNullValue();
-        return (ConverterUtils.GetBool(value) is true) ^ isInverted
+        return (ConverterUtils.GetBool(value, culture) is true) ^ isInverted
             ? GetTrueValue()
             : GetFalseValue();
     }

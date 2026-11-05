@@ -21,13 +21,15 @@ public class ToBoolConverter : ValueConverterBase
     public Func<bool?> GetNullValue { get; set; } = static () => false;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        return ConverterUtils.GetBool(value, GetNullValue());
+        if (ConverterUtils.IsUnavailable(value))
+            return GetDefaultResult();
+        return ConverterUtils.GetBool(value, culture, GetNullValue());
     }
 }

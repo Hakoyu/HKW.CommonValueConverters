@@ -51,7 +51,7 @@ public sealed class MultiValueConverterTests
 
         Assert.AreEqual(10, c.Convert([2, 3, 5], null, "++", null));
         Assert.AreEqual(15, c.Convert([2, "+", 3, "*", 3], null, null, null));
-        Assert.Throws<ConverterException>(() => c.Convert([1, 2], null, null, null));
+        Assert.AreSame(ConverterResults.UnsetValue, c.Convert([1, 2], null, null, null));
     }
 
     [TestMethod]
@@ -71,7 +71,7 @@ public sealed class MultiValueConverterTests
         Assert.AreEqual("True", c.Convert([true, "True", "False", "Null"], null, null, null));
         Assert.AreEqual("False", c.Convert([false, "True", "False", "Null"], null, null, null));
         Assert.AreEqual("Null", c.Convert([null, "True", "False", "Null"], null, null, null));
-        Assert.Throws<ArgumentException>(() => c.Convert([true], null, null, null));
+        Assert.AreEqual("Default", c.Convert([true], null, null, null));
     }
 
     [TestMethod]
@@ -81,7 +81,7 @@ public sealed class MultiValueConverterTests
 
         Assert.AreEqual(true, c.Convert(["Value", "Value"], null, null, null));
         Assert.AreEqual(false, c.Convert(["Value", "Other"], null, null, null));
-        Assert.Throws<NotImplementedException>(() => c.Convert(["Value"], null, null, null));
+        Assert.AreSame(ConverterResults.UnsetValue, c.Convert(["Value"], null, null, null));
     }
 
     [TestMethod]

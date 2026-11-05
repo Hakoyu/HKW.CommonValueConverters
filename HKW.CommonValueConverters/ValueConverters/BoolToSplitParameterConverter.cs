@@ -35,26 +35,28 @@ public class BoolToSplitParameterConverter : ValueConverterBase
     public Func<string, object> ConvertSplitValue { get; set; } = s => s;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        var defultResult = GetDefaultResult();
-        if (parameter is not string str || string.IsNullOrWhiteSpace(str))
-            return defultResult;
-        var r = ConverterUtils.GetBool(value);
-        var spilt = str.Split(GetSeparator(), StringSplitOptions.RemoveEmptyEntries);
+        if (ConverterUtils.IsUnavailable(value) || parameter is not string str || string.IsNullOrWhiteSpace(str))
+            return GetDefaultResult();
+        var r = ConverterUtils.GetBool(value, culture);
+        var separator = GetSeparator();
+        if (string.IsNullOrEmpty(separator))
+            return GetDefaultResult();
+        var spilt = str.Split(separator, StringSplitOptions.RemoveEmptyEntries);
         if (spilt.Length == 0)
-            return defultResult;
+            return GetDefaultResult();
         if (spilt.Length >= 1 && r is true)
             return ConvertSplitValue(spilt[0]);
         else if (spilt.Length >= 2 && r is false)
             return ConvertSplitValue(spilt[1]);
         else if (spilt.Length >= 3 && value is null)
             return ConvertSplitValue(spilt[2]);
-        return defultResult;
+        return GetDefaultResult();
     }
 }

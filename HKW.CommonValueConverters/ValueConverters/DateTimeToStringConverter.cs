@@ -32,34 +32,69 @@ public class DateTimeToStringConverter : ValueConverterBase
     public Func<string> GetFormat { get; set; } = () => DefaultFormat;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        if (value is not DateTime dateTime)
+        if (value is not DateTime dateTime || ConverterUtils.IsUnavailable(parameter))
             return GetDefaultResult();
 
         var format = parameter as string ?? GetFormat();
-        var localDateTime = TimeZoneInfo.ConvertTime(dateTime, _timeZone.Local);
-        return localDateTime.ToString(format, culture);
+        var zone = _timeZone.Local;
+        DateTime localDateTime;
+        try
+        {
+            localDateTime = TimeZoneInfo.ConvertTime(dateTime, zone);
+        }
+        catch (ArgumentException)
+        {
+            return GetDefaultResult();
+        }
+        try
+        {
+            return localDateTime.ToString(format, culture);
+        }
+        catch (FormatException) when (culture.GetType() == typeof(CultureInfo))
+        {
+            return GetDefaultResult();
+        }
     }
 
     /// <inheritdoc/>
-    public override object? ConvertBack(
+    protected override object? ConvertBackCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        if (value is string str && DateTime.TryParse(str, out var parsedDateTime))
+        if (value is not string str || ConverterUtils.IsUnavailable(parameter))
+            return GetDefaultResult();
+        var format = parameter as string ?? GetFormat();
+        DateTime parsedDateTime;
+        bool parsed;
+        try
         {
-            return TimeZoneInfo.ConvertTime(parsedDateTime, _timeZone.Utc);
+            parsed = DateTime.TryParseExact(str, format, culture, DateTimeStyles.RoundtripKind, out parsedDateTime)
+                || DateTime.TryParse(str, culture, DateTimeStyles.RoundtripKind, out parsedDateTime);
         }
-
-        return GetDefaultResult();
+        catch (FormatException) when (culture.GetType() == typeof(CultureInfo))
+        {
+            return GetDefaultResult();
+        }
+        if (!parsed)
+            return GetDefaultResult();
+        var zone = _timeZone.Utc;
+        try
+        {
+            return TimeZoneInfo.ConvertTime(parsedDateTime, zone);
+        }
+        catch (ArgumentException)
+        {
+            return GetDefaultResult();
+        }
     }
 }

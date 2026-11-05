@@ -25,14 +25,18 @@ public class NumberCompareConverter : ValueConverterBase
     public Func<NumberType> GetNumberType { get; set; } = static () => DefaultNumberType;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        return NumberUtils.Compare(value!, parameter!, GetNumberType());
+        var numberType = GetNumberType();
+        if (!ConverterUtils.TryNumber(value, numberType, culture, out var left)
+            || !ConverterUtils.TryNumber(parameter, numberType, culture, out var right))
+            return GetDefaultResult();
+        return NumberUtils.Compare(left, right, numberType);
     }
 }
 
@@ -69,21 +73,30 @@ public class NumberCompareByConverter : ValueConverterBase
         () => DefaultComparisonType;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
         var comparisonType = GetComparisonType();
-        if (parameter is string str && str.Length >= 2 && char.IsNumber(str[0]) is false)
+        if (parameter is string str)
         {
-            comparisonType = NumberUtils.GetComparisonOperatorType(str, out var operatorLength);
-            if (operatorLength == 0)
-                return GetDefaultResult();
-            parameter = str[operatorLength..];
+            str = str.Trim();
+            if (str.Length > 0 && str[0] is '=' or '!' or '<' or '>')
+            {
+                comparisonType = NumberUtils.GetComparisonOperatorType(str, out var operatorLength);
+                if (operatorLength == 0)
+                    return GetDefaultResult();
+                parameter = str[operatorLength..];
+            }
         }
-        return NumberUtils.CompareBy(value!, parameter!, GetNumberType(), comparisonType);
+        var numberType = GetNumberType();
+        if (!Enum.IsDefined(comparisonType)
+            || !ConverterUtils.TryNumber(value, numberType, culture, out var left)
+            || !ConverterUtils.TryNumber(parameter, numberType, culture, out var right))
+            return GetDefaultResult();
+        return NumberUtils.CompareBy(left, right, numberType, comparisonType);
     }
 }

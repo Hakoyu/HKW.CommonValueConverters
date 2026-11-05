@@ -34,16 +34,20 @@ public class EqualsToValueConverter<T> : ValueConverterBase
     public Func<bool> GetIsStringEquals { get; set; } = () => default!;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        var target = parameter ?? GetOther();
+        if (ConverterUtils.IsUnavailable(value))
+            return GetDefaultResult();
         if (value is null)
             return GetNullValue();
+        var target = parameter ?? GetOther();
+        if (ConverterUtils.IsUnavailable(target))
+            return GetDefaultResult();
         if (GetIsStringEquals())
             return value.ToString() == target?.ToString() ? GetTrueValue() : GetFalseValue();
         return value.Equals(target) ? GetTrueValue() : GetFalseValue();

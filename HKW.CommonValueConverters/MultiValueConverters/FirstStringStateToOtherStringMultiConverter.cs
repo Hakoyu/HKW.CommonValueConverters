@@ -24,22 +24,21 @@ namespace HKW.CommonValueConverters;
 public class FirstStringStateToOtherStringMultiConverter : MultiValueConverterBase
 {
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         IList<object?> values,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        if (values == null)
-            throw new ConverterException("Values is null");
+        if (values is null || values.Count == 0 || ConverterUtils.IsUnavailable(values[0]))
+            return GetDefaultResult();
         var value = values[0];
-        if (value is not string str)
-            return values.GetValueOrDefault(2, "Str3");
-        else if (str == string.Empty)
-            return values.GetValueOrDefault(3, "Str4");
-        else if (string.IsNullOrWhiteSpace(str))
-            return values.GetValueOrDefault(4, "Str5");
-        return values.GetValueOrDefault(1, "Str2");
+        var index = value is not string str ? 2
+            : str.Length == 0 ? 3
+            : string.IsNullOrWhiteSpace(str) ? 4 : 1;
+        if (index >= values.Count || ConverterUtils.IsUnavailable(values[index]))
+            return GetDefaultResult();
+        return values[index];
     }
 }

@@ -23,17 +23,19 @@ public class GuidToStringConverter : ValueConverterBase
     public Func<string> GetFormat { get; set; } = () => DefaultFormat;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        if (value is not Guid guid)
+        if (value is not Guid guid || ConverterUtils.IsUnavailable(parameter))
             return GetDefaultResult();
 
         var format = parameter as string ?? GetFormat();
+        if (!string.IsNullOrEmpty(format) && (format.Length != 1 || !"DdNnBbPpXx".Contains(format[0])))
+            return GetDefaultResult();
         var guidString = guid.ToString(format);
 
         var stringTo = GetStringTo();
@@ -46,20 +48,14 @@ public class GuidToStringConverter : ValueConverterBase
     }
 
     /// <inheritdoc/>
-    public override object? ConvertBack(
+    protected override object? ConvertBackCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        var defultResult = GetDefaultResult();
-        if (value is string guidString)
-        {
-            var guid = new Guid(guidString);
-            return guid;
-        }
-
-        return defultResult;
+        return value is string guidString && Guid.TryParse(guidString, out var guid)
+            ? guid : GetDefaultResult();
     }
 }

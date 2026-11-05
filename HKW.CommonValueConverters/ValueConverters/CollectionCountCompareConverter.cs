@@ -15,16 +15,17 @@ namespace HKW.CommonValueConverters;
 public class CollectionCountCompareConverter : ValueConverterBase
 {
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
         if (parameter is not int count)
         {
-            if (int.TryParse(parameter?.ToString(), out var i))
+            if (!ConverterUtils.IsUnavailable(parameter)
+                && int.TryParse(parameter?.ToString(), NumberStyles.Integer, culture, out var i))
                 count = i;
             else
                 return GetDefaultResult();
@@ -56,11 +57,11 @@ public class CollectionCountCompareConverter : ValueConverterBase
 public class CollectionCountCompareByConverter : ValueConverterBase
 {
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
         ComparisonOperatorType comparisonType;
@@ -70,7 +71,8 @@ public class CollectionCountCompareByConverter : ValueConverterBase
             comparisonType = NumberUtils.GetComparisonOperatorType(str, out var operatorLength);
             if (operatorLength == 0)
                 return GetDefaultResult();
-            count = int.Parse(str[operatorLength..]);
+            if (!int.TryParse(str[operatorLength..], NumberStyles.Integer, culture, out count))
+                return GetDefaultResult();
         }
         else
             return GetDefaultResult();

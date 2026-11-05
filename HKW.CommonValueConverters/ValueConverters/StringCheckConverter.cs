@@ -18,13 +18,15 @@ public class StringCheckConverter : InvertibleValueConverterBase
     public Func<StringCheckType> GetStringCheckType { get; set; } = () => DefaultStringCheckType;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
+        if (ConverterUtils.IsUnavailable(value) || ConverterUtils.IsUnavailable(parameter))
+            return GetDefaultResult();
         var isInverted = GetIsInverted();
         if (Enum.TryParse<StringCheckType>(parameter?.ToString(), out var checkType) is false)
             checkType = GetStringCheckType();

@@ -26,40 +26,52 @@ public class StringFormatMultiConverter : MultiValueConverterBase
     public Func<string?> GetReplaceUnsetValue { get; set; } = () => null;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         IList<object?> values,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        var replaceValue = GetReplaceUnsetValue();
-        if (values is null)
+        if (values is null || ConverterUtils.IsUnavailable(parameter))
             return GetDefaultResult();
-        culture ??= CultureInfo.CurrentCulture;
-        if (parameter is string format && string.IsNullOrWhiteSpace(format) is false)
+        var replaceValue = GetReplaceUnsetValue();
+        var format = parameter as string;
+        var start = 0;
+        if (string.IsNullOrWhiteSpace(format))
         {
-            if (replaceValue is not null)
-                return string.Format(
-                    culture,
-                    format,
-                    values.Select(v => v == UnsetValue ? replaceValue : v).ToArray()
-                );
-            else
-                return string.Format(culture, format, values.ToArray());
+            if (values.Count == 0 || values[0] is not string source)
+                return GetDefaultResult();
+            format = source;
+            start = 1;
         }
-        else
+        var arguments = values.Skip(start).ToArray();
+        for (var i = 0; i < arguments.Length; i++)
         {
-            format = (string)values[0]!;
-            var temp = values.Skip(1);
-            if (replaceValue is not null)
-                return string.Format(
-                    culture,
-                    format,
-                    temp.Select(v => v == UnsetValue ? replaceValue : v).ToArray()
-                );
-            else
-                return string.Format(culture, format, temp.ToArray());
+            if (ReferenceEquals(arguments[i], ConverterResults.UnsetValue) && replaceValue is not null)
+                arguments[i] = replaceValue;
+            else if (ConverterUtils.IsUnavailable(arguments[i]))
+                return GetDefaultResult();
+        }
+        System.Text.CompositeFormat parsed;
+        try
+        {
+            parsed = System.Text.CompositeFormat.Parse(format);
+        }
+        catch (FormatException)
+        {
+            return GetDefaultResult();
+        }
+        if (parsed.MinimumArgumentCount > arguments.Length)
+            return GetDefaultResult();
+        try
+        {
+            return string.Format(culture, parsed, arguments);
+        }
+        catch (FormatException) when (culture.GetType() == typeof(CultureInfo)
+            && arguments.All(v => v is null || v.GetType().Assembly == typeof(int).Assembly))
+        {
+            return GetDefaultResult();
         }
     }
 }

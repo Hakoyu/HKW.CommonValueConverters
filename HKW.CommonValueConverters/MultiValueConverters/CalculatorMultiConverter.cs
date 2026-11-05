@@ -29,7 +29,7 @@ namespace HKW.CommonValueConverters;
 /// </MultiBinding>
 /// ]]></code></para>
 /// </summary>
-/// <exception cref="ConverterException">绑定的数量不正确</exception>
+/// <remarks>数量、操作符或数值无效时返回默认结果；按输入顺序从左到右计算。</remarks>
 public class CalculatorMultiConverter : MultiValueConverterBase
 {
     /// <summary>
@@ -43,87 +43,43 @@ public class CalculatorMultiConverter : MultiValueConverterBase
     public Func<NumberType> GetNumberType { get; set; } = static () => DefaultNumberType;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         IList<object?> values,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
+        if (ConverterUtils.HasUnavailable(values) || ConverterUtils.IsUnavailable(parameter) || values.Count < 2)
+            return GetDefaultResult();
         var numberType = GetNumberType();
-        if (values.Any(i => i == UnsetValue))
+        if (!ConverterUtils.TryNumber(values[0], numberType, culture, out var result))
             return GetDefaultResult();
-        if (values.Count == 1)
-            return GetDefaultResult();
-        var result = NumberUtils.ConvertTo(values[0]!, numberType);
-        if (parameter is string operators && string.IsNullOrWhiteSpace(operators) is false)
+        if (parameter is string operators && !string.IsNullOrWhiteSpace(operators))
         {
-            result = GetResult(values, operators, result, numberType);
+            if (operators.Length != values.Count - 1)
+                return GetDefaultResult();
+            for (var i = 1; i < values.Count; i++)
+            {
+                if (!NumberUtils.TryGetArithmeticOperatorType(operators[i - 1], out var operation)
+                    || !ConverterUtils.TryNumber(values[i], numberType, culture, out var operand)
+                    || !ConverterUtils.TryArithmetic(result, operand, numberType, operation, out result))
+                    return GetDefaultResult();
+            }
         }
         else
         {
-            result = GetResult(values, result, numberType);
-        }
-        return result;
-    }
-
-    private static object GetResult(
-        IList<object?> values,
-        string operators,
-        object value,
-        NumberType numberType
-    )
-    {
-        var result = value;
-        if (operators.Length != values.Count - 1)
-            throw new ConverterException(
-                "Parameter error: operator must be one more than parameter"
-            );
-        for (int i = 1; i < values.Count - 1; i++)
-        {
-            result = NumberUtils.Arithmetic(
-                result,
-                NumberUtils.ConvertTo(values[i]!, numberType),
-                numberType,
-                operators[i - 1]
-            );
-        }
-        result = NumberUtils.Arithmetic(
-            result,
-            NumberUtils.ConvertTo(values[^1]!, numberType),
-            numberType,
-            operators.Last()
-        );
-        return result;
-    }
-
-    private static object GetResult(IList<object?> values, object value, NumberType numberType)
-    {
-        var result = value;
-        if (System.Convert.ToBoolean(values.Count & 1) is false)
-            throw new ConverterException("Parameter error: Incorrect quantity");
-        bool isNumber = false;
-        char currentOperator = '0';
-        for (int i = 1; i < values.Count - 1; i++)
-        {
-            if (isNumber is false)
+            if (values.Count % 2 == 0)
+                return GetDefaultResult();
+            for (var i = 1; i < values.Count; i += 2)
             {
-                currentOperator = ((string)values[i]!)[0];
-                isNumber = true;
-            }
-            else
-            {
-                var temp = NumberUtils.ConvertTo(values[i]!, numberType);
-                result = NumberUtils.Arithmetic(result, temp, numberType, currentOperator);
-                isNumber = false;
+                if (values[i] is not string token || token.Length != 1
+                    || !NumberUtils.TryGetArithmeticOperatorType(token[0], out var operation)
+                    || !ConverterUtils.TryNumber(values[i + 1], numberType, culture, out var operand)
+                    || !ConverterUtils.TryArithmetic(result, operand, numberType, operation, out result))
+                    return GetDefaultResult();
             }
         }
-        result = NumberUtils.Arithmetic(
-            result,
-            NumberUtils.ConvertTo(values[^1]!, numberType),
-            numberType,
-            currentOperator
-        );
         return result;
     }
 }

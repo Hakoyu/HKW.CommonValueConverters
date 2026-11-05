@@ -10,33 +10,31 @@ namespace HKW.CommonValueConverters;
 public class EnumToEnumInfoConverter : ValueConverterBase
 {
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        var defultResult = GetDefaultResult();
         if (value is not Enum @enum)
         {
-            return defultResult;
+            return GetDefaultResult();
         }
         return @enum.GetInfo();
     }
 
     /// <inheritdoc/>
-    public override object? ConvertBack(
+    protected override object? ConvertBackCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
-        var defultResult = GetDefaultResult();
         if (value is not IEnumInfo @enum)
         {
-            return defultResult;
+            return GetDefaultResult();
         }
         return @enum.Value;
     }

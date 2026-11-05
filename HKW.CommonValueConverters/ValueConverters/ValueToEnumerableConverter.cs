@@ -9,13 +9,15 @@ namespace HKW.CommonValueConverters;
 public class ValueToEnumerableConverter : ValueConverterBase
 {
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
+        if (ConverterUtils.IsUnavailable(value))
+            return GetDefaultResult();
         if (value is not null)
             return new object[] { value };
 

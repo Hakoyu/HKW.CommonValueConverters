@@ -19,18 +19,21 @@ public class AnyEqualsMultiConverter<T> : InvertibleMultiValueConverterBase
     public Func<bool> GetIsStringEquals { get; set; } = () => default!;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         IList<object?> values,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
         var isInverted = GetIsInverted();
+        if (ConverterUtils.HasUnavailable(values) || ConverterUtils.IsUnavailable(parameter))
+            return GetDefaultResult();
         var target = parameter is T t ? t : GetValue();
+        if (ConverterUtils.IsUnavailable(target))
+            return GetDefaultResult();
         if (GetIsStringEquals())
             return values.Any(o => o?.ToString() == target?.ToString()) ^ isInverted;
-        else
-            return values.Any(o => o?.Equals(target) is true) ^ isInverted;
+        return values.Any(o => Equals(o, target)) ^ isInverted;
     }
 }

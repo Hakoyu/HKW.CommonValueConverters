@@ -18,15 +18,17 @@ public class EqualsConverter : InvertibleValueConverterBase
     public Func<bool> GetIsStringEquals { get; set; } = () => default;
 
     /// <inheritdoc/>
-    public override object? Convert(
+    protected override object? ConvertCore(
         object? value,
         Type? targetType,
         object? parameter,
-        CultureInfo? culture
+        CultureInfo culture
     )
     {
         var isInverted = GetIsInverted();
         var target = parameter is null ? GetOther() : parameter;
+        if (ConverterUtils.IsUnavailable(value) || ConverterUtils.IsUnavailable(target))
+            return GetDefaultResult();
         if (GetIsStringEquals())
             return (value?.ToString() == target?.ToString()) ^ isInverted;
         if (value is null)
