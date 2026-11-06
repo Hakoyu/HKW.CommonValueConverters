@@ -33,8 +33,10 @@ public class NumberCompareConverter : ValueConverterBase
     )
     {
         var numberType = GetNumberType();
-        if (!ConverterUtils.TryNumber(value, numberType, culture, out var left)
-            || !ConverterUtils.TryNumber(parameter, numberType, culture, out var right))
+        if (
+            ConverterUtils.TryNumber(value, numberType, culture, out var left) is false
+            || ConverterUtils.TryNumber(parameter, numberType, culture, out var right) is false
+        )
             return GetDefaultResult();
         return NumberUtils.Compare(left, right, numberType);
     }
@@ -93,9 +95,11 @@ public class NumberCompareByConverter : ValueConverterBase
             }
         }
         var numberType = GetNumberType();
-        if (!Enum.IsDefined(comparisonType)
+        if (
+            !Enum.IsDefined(comparisonType)
             || !ConverterUtils.TryNumber(value, numberType, culture, out var left)
-            || !ConverterUtils.TryNumber(parameter, numberType, culture, out var right))
+            || !ConverterUtils.TryNumber(parameter, numberType, culture, out var right)
+        )
             return GetDefaultResult();
         return NumberUtils.CompareBy(left, right, numberType, comparisonType);
     }

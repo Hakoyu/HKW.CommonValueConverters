@@ -78,8 +78,20 @@ public class DateTimeToStringConverter : ValueConverterBase
         bool parsed;
         try
         {
-            parsed = DateTime.TryParseExact(str, format, culture, DateTimeStyles.RoundtripKind, out parsedDateTime)
-                || DateTime.TryParse(str, culture, DateTimeStyles.RoundtripKind, out parsedDateTime);
+            parsed =
+                DateTime.TryParseExact(
+                    str,
+                    format,
+                    culture,
+                    DateTimeStyles.RoundtripKind,
+                    out parsedDateTime
+                )
+                || DateTime.TryParse(
+                    str,
+                    culture,
+                    DateTimeStyles.RoundtripKind,
+                    out parsedDateTime
+                );
         }
         catch (FormatException) when (culture.GetType() == typeof(CultureInfo))
         {

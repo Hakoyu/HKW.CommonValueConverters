@@ -24,8 +24,10 @@ public class CollectionCountCompareConverter : ValueConverterBase
     {
         if (parameter is not int count)
         {
-            if (!ConverterUtils.IsUnavailable(parameter)
-                && int.TryParse(parameter?.ToString(), NumberStyles.Integer, culture, out var i))
+            if (
+                ConverterUtils.IsUnavailable(parameter) is false
+                && int.TryParse(parameter?.ToString(), NumberStyles.Integer, culture, out var i)
+            )
                 count = i;
             else
                 return GetDefaultResult();

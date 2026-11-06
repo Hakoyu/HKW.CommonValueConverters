@@ -21,7 +21,9 @@ public class FirstEqualsSecondMultiConverter : InvertibleMultiValueConverterBase
     public Func<bool> GetIsStringEquals { get; set; } = () => default!;
 
     /// <inheritdoc/>
-    /// <remarks>输入必须为两个已就绪的值，否则返回默认结果。</remarks>
+    /// <remarks>
+    /// 输入必须为两个已就绪的值, 否则返回默认结果.
+    /// </remarks>
     protected override object? ConvertCore(
         IList<object?> values,
         Type? targetType,

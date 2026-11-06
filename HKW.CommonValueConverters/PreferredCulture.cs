@@ -1,22 +1,22 @@
 ﻿namespace HKW.CommonValueConverters;
 
 /// <summary>
-/// 首选文化
+/// <see cref="System.Globalization.CultureInfo"/> 的选择方式.
 /// </summary>
 public enum PreferredCulture
 {
     /// <summary>
-    /// 转换器文化
+    /// 使用调用者传入的文化, 为空时回退到 <see cref="System.Globalization.CultureInfo.CurrentCulture"/>.
     /// </summary>
     ConverterCulture,
 
     /// <summary>
-    /// 当前文化
+    /// 使用 <see cref="System.Globalization.CultureInfo.CurrentCulture"/>.
     /// </summary>
     CurrentCulture,
 
     /// <summary>
-    /// 当前UI文化
+    /// 使用 <see cref="System.Globalization.CultureInfo.CurrentUICulture"/>.
     /// </summary>
     CurrentUICulture,
 }

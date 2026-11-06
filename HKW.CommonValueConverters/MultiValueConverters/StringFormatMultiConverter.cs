@@ -48,7 +48,10 @@ public class StringFormatMultiConverter : MultiValueConverterBase
         var arguments = values.Skip(start).ToArray();
         for (var i = 0; i < arguments.Length; i++)
         {
-            if (ReferenceEquals(arguments[i], ConverterResults.UnsetValue) && replaceValue is not null)
+            if (
+                ReferenceEquals(arguments[i], ConverterResults.UnsetValue)
+                && replaceValue is not null
+            )
                 arguments[i] = replaceValue;
             else if (ConverterUtils.IsUnavailable(arguments[i]))
                 return GetDefaultResult();
@@ -68,8 +71,10 @@ public class StringFormatMultiConverter : MultiValueConverterBase
         {
             return string.Format(culture, parsed, arguments);
         }
-        catch (FormatException) when (culture.GetType() == typeof(CultureInfo)
-            && arguments.All(v => v is null || v.GetType().Assembly == typeof(int).Assembly))
+        catch (FormatException)
+            when (culture.GetType() == typeof(CultureInfo)
+                && arguments.All(v => v is null || v.GetType().Assembly == typeof(int).Assembly)
+            )
         {
             return GetDefaultResult();
         }

@@ -43,7 +43,9 @@ public class StringToNumberConverter : ValueConverterBase
         if (
             NumberUtils.TryParse(
                 GetNumberType(),
-                value is IFormattable formattable ? formattable.ToString(null, culture) : value?.ToString(),
+                value is IFormattable formattable
+                    ? formattable.ToString(null, culture)
+                    : value?.ToString(),
                 GetNumberStyles(),
                 culture,
                 out var result
@@ -64,6 +66,8 @@ public class StringToNumberConverter : ValueConverterBase
     {
         if (ConverterUtils.IsUnavailable(value))
             return GetDefaultResult();
-        return value is IFormattable formattable ? formattable.ToString(null, culture) : value?.ToString();
+        return value is IFormattable formattable
+            ? formattable.ToString(null, culture)
+            : value?.ToString();
     }
 }

@@ -32,18 +32,23 @@ public class NumberClampConverter : ValueConverterBase
     )
     {
         var numberType = GetNumberType();
-        if (ConverterUtils.IsUnavailable(parameter)
-            || !ConverterUtils.TryNumber(value, numberType, culture, out var number))
+        if (
+            ConverterUtils.IsUnavailable(parameter)
+            || ConverterUtils.TryNumber(value, numberType, culture, out var number) is false
+        )
             return GetDefaultResult();
         object min = NumberUtils.GetDefault(numberType);
         object max = NumberUtils.GetDefault(numberType);
         if (parameter is string str)
         {
             var split = str.Split(',');
-            if (split.Length != 2
-                || !ConverterUtils.TryNumber(split[0], numberType, culture, out min)
-                || !ConverterUtils.TryNumber(split[1], numberType, culture, out max)
-                || NumberUtils.CompareBy(min, max, numberType, ComparisonOperatorType.GreaterThan) is true)
+            if (
+                split.Length != 2
+                || ConverterUtils.TryNumber(split[0], numberType, culture, out min) is false
+                || ConverterUtils.TryNumber(split[1], numberType, culture, out max) is false
+                || NumberUtils.CompareBy(min, max, numberType, ComparisonOperatorType.GreaterThan)
+                    is true
+            )
                 return GetDefaultResult();
         }
         return NumberUtils.CompareBy(number, min, numberType, ComparisonOperatorType.LessThan)

@@ -4,7 +4,7 @@ using HKW.HKWUtils.Extensions;
 namespace HKW.CommonValueConverters;
 
 /// <summary>
-/// 字符串为Null或空到字符串转换器
+/// 字符串为 <see langword="null"/> 或空时选择分支的转换器
 /// <para>示例:
 /// <code><![CDATA[
 /// <MultiBinding Converter="{StaticResource FirstStringStateToOtherStringMultiConverter}">
@@ -34,9 +34,23 @@ public class FirstStringStateToOtherStringMultiConverter : MultiValueConverterBa
         if (values is null || values.Count == 0 || ConverterUtils.IsUnavailable(values[0]))
             return GetDefaultResult();
         var value = values[0];
-        var index = value is not string str ? 2
-            : str.Length == 0 ? 3
-            : string.IsNullOrWhiteSpace(str) ? 4 : 1;
+        int index;
+        if (value is not string str)
+        {
+            index = 2;
+        }
+        else
+        {
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                index = str.Length == 0 ? 3 : 4;
+            }
+            else
+            {
+                index = str.Length == 0 ? 3 : 1;
+            }
+        }
+
         if (index >= values.Count || ConverterUtils.IsUnavailable(values[index]))
             return GetDefaultResult();
         return values[index];

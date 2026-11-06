@@ -25,7 +25,16 @@ public class VersionToStringConverter : ValueConverterBase
             return GetDefaultResult();
         if (int.TryParse(parameter as string, NumberStyles.Integer, culture, out int fieldCount))
         {
-            var availableFields = version.Revision >= 0 ? 4 : version.Build >= 0 ? 3 : 2;
+            int availableFields;
+            if (version.Revision >= 0)
+            {
+                availableFields = 4;
+            }
+            else
+            {
+                availableFields = version.Build >= 0 ? 3 : 2;
+            }
+
             if (fieldCount < 0 || fieldCount > availableFields)
                 return GetDefaultResult();
             return version.ToString(fieldCount);

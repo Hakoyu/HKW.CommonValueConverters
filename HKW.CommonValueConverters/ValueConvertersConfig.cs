@@ -8,13 +8,13 @@ namespace HKW.CommonValueConverters;
 public static class ValueConvertersConfig
 {
     /// <summary>
-    /// 默认首选文化
+    /// 实例未覆盖时使用的 <see cref="PreferredCulture"/>.
     /// </summary>
     public static PreferredCulture DefaultPreferredCulture { get; set; } =
         PreferredCulture.ConverterCulture;
 
     /// <summary>
-    /// 选择文化
+    /// 按 <paramref name="preferredCulture"/> 选择 <see cref="CultureInfo"/>, 空调用文化回退到 <see cref="CultureInfo.CurrentCulture"/>.
     /// </summary>
     /// <param name="preferredCulture">首选文化</param>
     /// <param name="converterCulture">转换器文化</param>

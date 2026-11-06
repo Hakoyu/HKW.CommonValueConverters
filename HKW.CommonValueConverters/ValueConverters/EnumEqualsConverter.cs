@@ -25,7 +25,7 @@ public class EnumEqualsConverter : ValueConverterBase
             return GetDefaultResult();
         if (parameter is string str)
         {
-            if (!Enum.TryParse(value.GetType(), str, out var parameterValue))
+            if (Enum.TryParse(value.GetType(), str, out var parameterValue) is false)
                 return GetDefaultResult();
             return Equals(parameterValue, value);
         }

@@ -87,7 +87,7 @@ internal static class ConverterUtils
     )
     {
         result = null!;
-        if (!Enum.IsDefined(operation))
+        if (Enum.IsDefined(operation) is false)
             return false;
         try
         {

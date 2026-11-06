@@ -22,7 +22,10 @@ public class EnumsToEnumInfosConverter : ValueConverterBase
         CultureInfo culture
     )
     {
-        if (value is not IEnumerable enums || enums.Cast<object?>().FirstOrDefault() is not Enum @enum)
+        if (
+            value is not IEnumerable enums
+            || enums.Cast<object?>().FirstOrDefault() is not Enum @enum
+        )
             return GetDefaultResult();
         if (GetOnlyValid())
             return @enum.GetInfo().ValidInfoDictionary.Values;

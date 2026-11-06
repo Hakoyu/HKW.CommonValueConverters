@@ -16,9 +16,13 @@ public class GetDictionaryValueConverter : ValueConverterBase
         CultureInfo culture
     )
     {
-        if (value is not IDictionary dictionary || parameter is null || ConverterUtils.IsUnavailable(parameter))
+        if (
+            value is not IDictionary dictionary
+            || parameter is null
+            || ConverterUtils.IsUnavailable(parameter)
+        )
             return GetDefaultResult();
-        if (!dictionary.Contains(parameter))
+        if (dictionary.Contains(parameter) is false)
             return GetDefaultResult();
         var result = dictionary[parameter];
         return ConverterUtils.IsUnavailable(result) ? GetDefaultResult() : result;

@@ -6,10 +6,16 @@ namespace HKW.CommonValueConverters;
 
 /// <summary>
 /// 计算器转换器
-/// <para>示例:
+/// <para>示例1:
 /// <code><![CDATA[
 /// <Binding Number,Converter="{StaticResource CalculatorConverter}",ConverterParameter="8"/>
+/// ArithmeticOperatorType: Addition
 /// return: Number + 8
+/// ]]></code></para>
+/// <para>示例2:
+/// <code><![CDATA[
+/// <Binding Number,Converter="{StaticResource CalculatorConverter}",ConverterParameter="*6"/>
+/// return: Number * 6
 /// ]]></code></para>
 /// </summary>
 public class CalculatorConverter : ValueConverterBase
@@ -44,12 +50,23 @@ public class CalculatorConverter : ValueConverterBase
         CultureInfo culture
     )
     {
+        var str = parameter?.ToString();
+        if (str is null || string.IsNullOrWhiteSpace(str))
+            return GetDefaultResult();
         var numberType = GetNumberType();
         var operation = GetOperatorType();
-        if (!ConverterUtils.TryNumber(value, numberType, culture, out var left)
-            || !ConverterUtils.TryNumber(parameter, numberType, culture, out var right))
+        if (NumberUtils.TryGetArithmeticOperatorType(str[0], out var op))
+        {
+            operation = op;
+            str = str[1..];
+        }
+        if (
+            ConverterUtils.TryNumber(value, numberType, culture, out var left) is false
+            || ConverterUtils.TryNumber(str, numberType, culture, out var right) is false
+        )
             return GetDefaultResult();
         return ConverterUtils.TryArithmetic(left, right, numberType, operation, out var result)
-            ? result : GetDefaultResult();
+            ? result
+            : GetDefaultResult();
     }
 }

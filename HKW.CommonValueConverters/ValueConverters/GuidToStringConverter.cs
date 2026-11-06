@@ -8,12 +8,16 @@ namespace HKW.CommonValueConverters;
 public class GuidToStringConverter : ValueConverterBase
 {
     /// <summary>
+    /// 支持的格式说明符字符。    /// </summary>
+    public const string FormatValues = "DdNnBbPpXx";
+
+    /// <summary>
     /// 默认格式化
     /// </summary>
     public const string DefaultFormat = "D";
 
     /// <summary>
-    /// 字符串改变, true 到大写, false 到小写, null 不变
+    /// 字符串改变, <see langword="true"/> 到大写, <see langword="false"/> 到小写, <see langword="null"/> 不变
     /// </summary>
     public Func<bool?> GetStringTo { get; set; } = () => null;
 
@@ -34,7 +38,10 @@ public class GuidToStringConverter : ValueConverterBase
             return GetDefaultResult();
 
         var format = parameter as string ?? GetFormat();
-        if (!string.IsNullOrEmpty(format) && (format.Length != 1 || !"DdNnBbPpXx".Contains(format[0])))
+        if (
+            string.IsNullOrEmpty(format) is false
+            && (format.Length != 1 || FormatValues.Contains(format[0]) is false)
+        )
             return GetDefaultResult();
         var guidString = guid.ToString(format);
 
@@ -56,6 +63,7 @@ public class GuidToStringConverter : ValueConverterBase
     )
     {
         return value is string guidString && Guid.TryParse(guidString, out var guid)
-            ? guid : GetDefaultResult();
+            ? guid
+            : GetDefaultResult();
     }
 }

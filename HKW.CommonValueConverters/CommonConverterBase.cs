@@ -8,7 +8,7 @@ namespace HKW.CommonValueConverters;
 public interface ICommonValueConverter
 {
     /// <summary>
-    /// 首选文化
+    /// 首选文化, 使用 <see cref="HKW.CommonValueConverters.PreferredCulture"/> 指定文化来源.
     /// </summary>
     public PreferredCulture PreferredCulture { get; set; }
 }
@@ -19,20 +19,20 @@ public interface ICommonValueConverter
 public abstract class CommonConverterBase : ICommonValueConverter
 {
     /// <summary>
-    /// 全局默认结果，默认为 <see cref="ConverterResults.UnsetValue"/>。
+    /// 全局默认结果, 默认为 <see cref="ConverterResults.UnsetValue"/>.
     /// </summary>
     public static object? GlobalDefaultResult { get; set; } = ConverterResults.UnsetValue;
 
     /// <summary>
-    /// 默认结果
-    /// <para>当转换器未成功执行时,返回此值</para>
+    /// 默认结果, 默认读取 <see cref="GlobalDefaultResult"/>.
+    /// <para>当转换器未成功执行时, 返回此值</para>
     /// </summary>
     public Func<object?> GetDefaultResult { get; set; } = () => GlobalDefaultResult;
 
     private PreferredCulture? _preferredCulture;
 
     /// <summary>
-    /// 首选文化
+    /// 首选文化, 未设置实例值时使用 <see cref="ValueConvertersConfig.DefaultPreferredCulture"/>
     /// </summary>
     public PreferredCulture PreferredCulture
     {
@@ -41,7 +41,7 @@ public abstract class CommonConverterBase : ICommonValueConverter
     }
 
     /// <summary>
-    /// 选择文化
+    /// 根据 <see cref="PreferredCulture"/> 和 <paramref name="converterCulture"/> 选择有效文化.
     /// </summary>
     /// <param name="converterCulture">转换器文化</param>
     /// <returns>文化</returns>

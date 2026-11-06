@@ -5,6 +5,7 @@ namespace HKW.CommonValueConverters;
 /// <summary>
 /// 全部为布尔值到值转换器
 /// </summary>
+/// <typeparam name="T">配置值的类型.</typeparam>
 public class AllBoolToValueMultiConverter<T> : MultiValueConverterBase
 {
     /// <summary>

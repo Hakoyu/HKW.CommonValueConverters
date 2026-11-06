@@ -6,12 +6,12 @@
 public interface ITimeZoneInfo
 {
     /// <summary>
-    /// UTC时区
+    /// UTC 时区的 <see cref="TimeZoneInfo"/>.
     /// </summary>
     public TimeZoneInfo Utc { get; }
 
     /// <summary>
-    /// 本地时区
+    /// 本地时区的 <see cref="TimeZoneInfo"/>.
     /// </summary>
     public TimeZoneInfo Local { get; }
 }

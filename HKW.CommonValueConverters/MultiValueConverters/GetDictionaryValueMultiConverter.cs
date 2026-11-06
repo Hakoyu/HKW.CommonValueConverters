@@ -24,8 +24,12 @@ public class GetDictionaryValueMultiConverter : MultiValueConverterBase
         CultureInfo culture
     )
     {
-        if (ConverterUtils.HasUnavailable(value) || value.Count != 2
-            || value[0] is not IDictionary dictionary || value[1] is null)
+        if (
+            ConverterUtils.HasUnavailable(value)
+            || value.Count != 2
+            || value[0] is not IDictionary dictionary
+            || value[1] is null
+        )
             return GetDefaultResult();
         if (!dictionary.Contains(value[1]!))
             return GetDefaultResult();

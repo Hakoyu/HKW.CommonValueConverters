@@ -16,12 +16,12 @@ public class SystemTimeZoneInfo : ITimeZoneInfo
     public static ITimeZoneInfo Current => _current.Value;
 
     /// <summary>
-    /// UTC时区
+    /// UTC 时区的 <see cref="TimeZoneInfo"/>.
     /// </summary>
     public TimeZoneInfo Utc => TimeZoneInfo.Utc;
 
     /// <summary>
-    /// 本地时区
+    /// 本地时区的 <see cref="TimeZoneInfo"/>.
     /// </summary>
     public TimeZoneInfo Local => TimeZoneInfo.Local;
 }

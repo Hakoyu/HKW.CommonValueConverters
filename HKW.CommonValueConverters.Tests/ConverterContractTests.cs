@@ -32,7 +32,10 @@ public sealed class ConverterContractTests
             CommonConverterBase.GlobalDefaultResult = fallback;
             Assert.AreSame(fallback, converter.Convert(1, null, null, null));
         }
-        finally { CommonConverterBase.GlobalDefaultResult = saved; }
+        finally
+        {
+            CommonConverterBase.GlobalDefaultResult = saved;
+        }
     }
 
     [TestMethod]
@@ -78,8 +81,12 @@ public sealed class ConverterContractTests
     [TestMethod]
     public void UnsupportedReverseConversionRemainsExplicit()
     {
-        Assert.ThrowsExactly<NotSupportedException>(() => new NullToBoolConverter().ConvertBack(null, null, null, null));
-        Assert.ThrowsExactly<NotSupportedException>(() => new AllEqualsMultiConverter<object>().ConvertBack(null, [], null, null));
+        Assert.ThrowsExactly<NotSupportedException>(() =>
+            new NullToBoolConverter().ConvertBack(null, null, null, null)
+        );
+        Assert.ThrowsExactly<NotSupportedException>(() =>
+            new AllEqualsMultiConverter<object>().ConvertBack(null, [], null, null)
+        );
     }
 
     [TestMethod]
@@ -111,23 +118,51 @@ public sealed class ConverterContractTests
 
     private sealed class CultureProbe : ValueConverterBase
     {
-        protected override object ConvertCore(object? value, Type? targetType, object? parameter, CultureInfo culture) => culture;
-        protected override object ConvertBackCore(object? value, Type? targetType, object? parameter, CultureInfo culture) => culture;
+        protected override object ConvertCore(
+            object? value,
+            Type? targetType,
+            object? parameter,
+            CultureInfo culture
+        ) => culture;
+
+        protected override object ConvertBackCore(
+            object? value,
+            Type? targetType,
+            object? parameter,
+            CultureInfo culture
+        ) => culture;
     }
 
     private sealed class MultiCultureProbe : MultiValueConverterBase
     {
-        protected override object ConvertCore(IList<object?> values, Type? targetType, object? parameter, CultureInfo culture) => culture;
-        protected override object[] ConvertBackCore(object? value, IList<Type?> targetTypes, object? parameter, CultureInfo culture) => [culture];
+        protected override object ConvertCore(
+            IList<object?> values,
+            Type? targetType,
+            object? parameter,
+            CultureInfo culture
+        ) => culture;
+
+        protected override object[] ConvertBackCore(
+            object? value,
+            IList<Type?> targetTypes,
+            object? parameter,
+            CultureInfo culture
+        ) => [culture];
     }
 
     private sealed class PlatformMapping
     {
         public object Unset { get; } = new();
         public object DoNothing { get; } = new();
-        public object? ToCore(object? value) => ReferenceEquals(value, Unset) ? ConverterResults.UnsetValue
-            : ReferenceEquals(value, DoNothing) ? ConverterResults.DoNothing : value;
-        public object? FromCore(object? value) => ReferenceEquals(value, ConverterResults.UnsetValue) ? Unset
-            : ReferenceEquals(value, ConverterResults.DoNothing) ? DoNothing : value;
+
+        public object? ToCore(object? value) =>
+            ReferenceEquals(value, Unset) ? ConverterResults.UnsetValue
+            : ReferenceEquals(value, DoNothing) ? ConverterResults.DoNothing
+            : value;
+
+        public object? FromCore(object? value) =>
+            ReferenceEquals(value, ConverterResults.UnsetValue) ? Unset
+            : ReferenceEquals(value, ConverterResults.DoNothing) ? DoNothing
+            : value;
     }
 }

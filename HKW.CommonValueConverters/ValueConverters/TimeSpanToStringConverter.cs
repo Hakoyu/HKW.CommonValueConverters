@@ -56,8 +56,10 @@ public class TimeSpanToStringConverter : ValueConverterBase
         if (value is not string str)
             return GetDefaultResult();
         var format = parameter as string ?? GetFormat();
-        return TimeSpan.TryParseExact(str, format, culture, out var resultTimeSpan)
+        return
+            TimeSpan.TryParseExact(str, format, culture, out var resultTimeSpan)
             || TimeSpan.TryParse(str, culture, out resultTimeSpan)
-            ? resultTimeSpan : GetDefaultResult();
+            ? resultTimeSpan
+            : GetDefaultResult();
     }
 }

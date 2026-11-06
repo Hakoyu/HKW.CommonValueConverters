@@ -29,7 +29,9 @@ namespace HKW.CommonValueConverters;
 /// </MultiBinding>
 /// ]]></code></para>
 /// </summary>
-/// <remarks>数量、操作符或数值无效时返回默认结果；按输入顺序从左到右计算。</remarks>
+/// <remarks>
+/// 数量, 操作符或数值无效时返回默认结果; 按输入顺序从左到右计算.
+/// </remarks>
 public class CalculatorMultiConverter : MultiValueConverterBase
 {
     /// <summary>
@@ -50,7 +52,11 @@ public class CalculatorMultiConverter : MultiValueConverterBase
         CultureInfo culture
     )
     {
-        if (ConverterUtils.HasUnavailable(values) || ConverterUtils.IsUnavailable(parameter) || values.Count < 2)
+        if (
+            ConverterUtils.HasUnavailable(values)
+            || ConverterUtils.IsUnavailable(parameter)
+            || values.Count < 2
+        )
             return GetDefaultResult();
         var numberType = GetNumberType();
         if (!ConverterUtils.TryNumber(values[0], numberType, culture, out var result))
@@ -61,9 +67,17 @@ public class CalculatorMultiConverter : MultiValueConverterBase
                 return GetDefaultResult();
             for (var i = 1; i < values.Count; i++)
             {
-                if (!NumberUtils.TryGetArithmeticOperatorType(operators[i - 1], out var operation)
+                if (
+                    !NumberUtils.TryGetArithmeticOperatorType(operators[i - 1], out var operation)
                     || !ConverterUtils.TryNumber(values[i], numberType, culture, out var operand)
-                    || !ConverterUtils.TryArithmetic(result, operand, numberType, operation, out result))
+                    || !ConverterUtils.TryArithmetic(
+                        result,
+                        operand,
+                        numberType,
+                        operation,
+                        out result
+                    )
+                )
                     return GetDefaultResult();
             }
         }
@@ -73,10 +87,24 @@ public class CalculatorMultiConverter : MultiValueConverterBase
                 return GetDefaultResult();
             for (var i = 1; i < values.Count; i += 2)
             {
-                if (values[i] is not string token || token.Length != 1
+                if (
+                    values[i] is not string token
+                    || token.Length != 1
                     || !NumberUtils.TryGetArithmeticOperatorType(token[0], out var operation)
-                    || !ConverterUtils.TryNumber(values[i + 1], numberType, culture, out var operand)
-                    || !ConverterUtils.TryArithmetic(result, operand, numberType, operation, out result))
+                    || !ConverterUtils.TryNumber(
+                        values[i + 1],
+                        numberType,
+                        culture,
+                        out var operand
+                    )
+                    || !ConverterUtils.TryArithmetic(
+                        result,
+                        operand,
+                        numberType,
+                        operation,
+                        out result
+                    )
+                )
                     return GetDefaultResult();
             }
         }

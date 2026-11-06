@@ -25,7 +25,7 @@ public class BoolToValueConverter<T> : InvertibleValueConverterBase
 
     /// <summary>
     /// 为空时的值
-    /// <para>只有 <see cref="GetIsNullable"/> 返回 <see langword="true"/> 时, 才对value进行判断并返回此方法的结果</para>
+    /// <para>只有 <see cref="GetIsNullable"/> 返回 <see langword="true"/> 时, 才对输入值进行判断并返回此委托的结果</para>
     /// </summary>
     public Func<T> GetNullValue { get; set; } = () => default!;
 

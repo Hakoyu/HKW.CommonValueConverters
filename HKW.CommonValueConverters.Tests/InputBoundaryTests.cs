@@ -17,14 +17,28 @@ public sealed class InputBoundaryTests
     {
         var c = new BoolToValueConverter<string>
         {
-            GetIsNullable = () => nullable, GetIsInverted = () => inverted,
-            GetTrueValue = () => "true", GetFalseValue = () => "false", GetNullValue = () => "null",
+            GetIsNullable = () => nullable,
+            GetIsInverted = () => inverted,
+            GetTrueValue = () => "true",
+            GetFalseValue = () => "false",
+            GetNullValue = () => "null",
         };
         Assert.AreEqual(inverted ? "false" : "true", c.Convert(true, null, null, null));
         Assert.AreEqual(inverted ? "true" : "false", c.Convert(false, null, null, null));
-        Assert.AreEqual(nullable ? "null" : inverted ? "true" : "false", c.Convert(null, null, null, null));
-        Assert.AreSame(ConverterResults.UnsetValue, c.Convert(ConverterResults.UnsetValue, null, null, null));
-        Assert.AreSame(ConverterResults.UnsetValue, c.Convert(ConverterResults.DoNothing, null, null, null));
+        Assert.AreEqual(
+            nullable ? "null"
+                : inverted ? "true"
+                : "false",
+            c.Convert(null, null, null, null)
+        );
+        Assert.AreSame(
+            ConverterResults.UnsetValue,
+            c.Convert(ConverterResults.UnsetValue, null, null, null)
+        );
+        Assert.AreSame(
+            ConverterResults.UnsetValue,
+            c.Convert(ConverterResults.DoNothing, null, null, null)
+        );
     }
 
     [TestMethod]
@@ -41,7 +55,15 @@ public sealed class InputBoundaryTests
         Assert.AreEqual(inverted ? 1 : 2, count.Convert([null, 1, null], null, null, null));
         Assert.AreEqual(!inverted, pair.Convert([null, null], null, null, null));
         Assert.AreEqual(inverted, pair.Convert([null, 1], null, null, null));
-        Assert.AreSame(ConverterResults.UnsetValue, pair.Convert([ConverterResults.UnsetValue, ConverterResults.UnsetValue], null, null, null));
+        Assert.AreSame(
+            ConverterResults.UnsetValue,
+            pair.Convert(
+                [ConverterResults.UnsetValue, ConverterResults.UnsetValue],
+                null,
+                null,
+                null
+            )
+        );
     }
 
     [TestMethod]
@@ -74,13 +96,27 @@ public sealed class InputBoundaryTests
     [TestMethod]
     public void MultiConvertersHandleNullAndEmptyRequiredInputs()
     {
-        MultiValueConverterBase[] converters = [new CalculatorMultiConverter(), new FirstBoolToValueMultiConverter(),
-            new FirstEqualsSecondMultiConverter(), new FirstStringStateToOtherStringMultiConverter(),
-            new GetDictionaryValueMultiConverter(), new StringFormatMultiConverter()];
+        MultiValueConverterBase[] converters =
+        [
+            new CalculatorMultiConverter(),
+            new FirstBoolToValueMultiConverter(),
+            new FirstEqualsSecondMultiConverter(),
+            new FirstStringStateToOtherStringMultiConverter(),
+            new GetDictionaryValueMultiConverter(),
+            new StringFormatMultiConverter(),
+        ];
         foreach (var converter in converters)
         {
-            Assert.AreSame(ConverterResults.UnsetValue, converter.Convert([], null, null, null), converter.GetType().Name);
-            Assert.AreSame(ConverterResults.UnsetValue, converter.Convert(null!, null, null, null), converter.GetType().Name);
+            Assert.AreSame(
+                ConverterResults.UnsetValue,
+                converter.Convert([], null, null, null),
+                converter.GetType().Name
+            );
+            Assert.AreSame(
+                ConverterResults.UnsetValue,
+                converter.Convert(null!, null, null, null),
+                converter.GetType().Name
+            );
         }
     }
 
@@ -112,7 +148,10 @@ public sealed class InputBoundaryTests
         Assert.AreSame(unset, calculator.Convert([1, 2, 3], null, "+", null));
         Assert.AreSame(unset, calculator.Convert([1, 0], null, "/", null));
         Assert.AreEqual(15, calculator.Convert([2, "+", 3, "*", 3], null, null, null));
-        var single = new CalculatorConverter { GetOperatorType = () => ArithmeticOperatorType.Division };
+        var single = new CalculatorConverter
+        {
+            GetOperatorType = () => ArithmeticOperatorType.Division,
+        };
         Assert.AreSame(unset, single.Convert(1, null, 0, null));
         Assert.AreSame(unset, single.Convert("bad", null, 2, null));
         var clamp = new NumberClampConverter();
@@ -123,20 +162,36 @@ public sealed class InputBoundaryTests
         Assert.AreEqual(true, compare.Convert(-1, null, ">-2", null));
         Assert.AreSame(unset, compare.Convert(1, null, ">bad", null));
         Assert.AreSame(unset, new NumberCompareConverter().Convert("bad", null, 1, null));
-        Assert.AreSame(unset, new CollectionCountCompareByConverter().Convert(new[] { 1 }, null, ">bad", null));
+        Assert.AreSame(
+            unset,
+            new CollectionCountCompareByConverter().Convert(new[] { 1 }, null, ">bad", null)
+        );
     }
 
     [TestMethod]
     public void EnumGuidVersionAndDictionaryValidateOrdinaryFailures()
     {
         var unset = ConverterResults.UnsetValue;
-        Assert.AreSame(unset, new EnumsToEnumInfosConverter().Convert(Array.Empty<DayOfWeek>(), null, null, null));
-        Assert.AreSame(unset, new EnumsToEnumInfosConverter().Convert(new[] { 1 }, null, null, null));
+        Assert.AreSame(
+            unset,
+            new EnumsToEnumInfosConverter().Convert(Array.Empty<DayOfWeek>(), null, null, null)
+        );
+        Assert.AreSame(
+            unset,
+            new EnumsToEnumInfosConverter().Convert(new[] { 1 }, null, null, null)
+        );
         Assert.AreEqual(false, new EnumEqualsConverter().Convert(1, null, "Monday", null));
         Assert.AreSame(unset, new GuidToStringConverter().ConvertBack("invalid", null, null, null));
         Assert.AreSame(unset, new GuidToStringConverter().Convert(Guid.Empty, null, "bad", null));
-        Assert.AreSame(unset, new VersionToStringConverter().Convert(new Version(1, 2), null, "4", null));
-        IDictionary dictionary = new Dictionary<string, object?> { ["null"] = null, ["pending"] = unset };
+        Assert.AreSame(
+            unset,
+            new VersionToStringConverter().Convert(new Version(1, 2), null, "4", null)
+        );
+        IDictionary dictionary = new Dictionary<string, object?>
+        {
+            ["null"] = null,
+            ["pending"] = unset,
+        };
         var c = new GetDictionaryValueConverter();
         Assert.IsNull(c.Convert(dictionary, null, "null", null));
         Assert.AreSame(unset, c.Convert(dictionary, null, 1, null));
@@ -149,54 +204,150 @@ public sealed class InputBoundaryTests
     {
         object? Fail() => throw new InvalidOperationException("default called on success");
         var dictionary = new Hashtable { ["key"] = 1 };
-        Assert.AreEqual(1, new GetDictionaryValueConverter { GetDefaultResult = Fail }.Convert(dictionary, null, "key", null));
-        Assert.AreEqual(1, new GetDictionaryValueMultiConverter { GetDefaultResult = Fail }.Convert([dictionary, "key"], null, null, null));
-        Assert.AreEqual(1, new FirstOrDefaultConverter { GetDefaultResult = Fail }.Convert(new[] { 1 }, null, null, null));
-        Assert.AreEqual(true, new EnumEqualsConverter { GetDefaultResult = Fail }.Convert(DayOfWeek.Monday, null, "Monday", null));
-        Assert.IsNotNull(new EnumToEnumInfoConverter { GetDefaultResult = Fail }.Convert(DayOfWeek.Monday, null, null, null));
-        Assert.IsNotNull(new EnumsToEnumInfosConverter { GetDefaultResult = Fail }.Convert(new[] { DayOfWeek.Monday }, null, null, null));
-        Assert.AreEqual(Guid.Empty, new GuidToStringConverter { GetDefaultResult = Fail }.ConvertBack(Guid.Empty.ToString(), null, null, null));
+        Assert.AreEqual(
+            1,
+            new GetDictionaryValueConverter { GetDefaultResult = Fail }.Convert(
+                dictionary,
+                null,
+                "key",
+                null
+            )
+        );
+        Assert.AreEqual(
+            1,
+            new GetDictionaryValueMultiConverter { GetDefaultResult = Fail }.Convert(
+                [dictionary, "key"],
+                null,
+                null,
+                null
+            )
+        );
+        Assert.AreEqual(
+            1,
+            new FirstOrDefaultConverter { GetDefaultResult = Fail }.Convert(
+                new[] { 1 },
+                null,
+                null,
+                null
+            )
+        );
+        Assert.AreEqual(
+            true,
+            new EnumEqualsConverter { GetDefaultResult = Fail }.Convert(
+                DayOfWeek.Monday,
+                null,
+                "Monday",
+                null
+            )
+        );
+        Assert.IsNotNull(
+            new EnumToEnumInfoConverter { GetDefaultResult = Fail }.Convert(
+                DayOfWeek.Monday,
+                null,
+                null,
+                null
+            )
+        );
+        Assert.IsNotNull(
+            new EnumsToEnumInfosConverter { GetDefaultResult = Fail }.Convert(
+                new[] { DayOfWeek.Monday },
+                null,
+                null,
+                null
+            )
+        );
+        Assert.AreEqual(
+            Guid.Empty,
+            new GuidToStringConverter { GetDefaultResult = Fail }.ConvertBack(
+                Guid.Empty.ToString(),
+                null,
+                null,
+                null
+            )
+        );
         var exception = new FormatException("user configuration");
         var c = new BoolToValueConverter<string> { GetTrueValue = () => throw exception };
-        Assert.AreSame(exception, Assert.ThrowsExactly<FormatException>(() => c.Convert(true, null, null, null)));
+        Assert.AreSame(
+            exception,
+            Assert.ThrowsExactly<FormatException>(() => c.Convert(true, null, null, null))
+        );
         var formatter = new StringFormatMultiConverter();
-        Assert.ThrowsExactly<FormatException>(() => formatter.Convert([new ThrowingValue()], null, "{0}", null));
+        Assert.ThrowsExactly<FormatException>(() =>
+            formatter.Convert([new ThrowingValue()], null, "{0}", null)
+        );
     }
 
     [TestMethod]
     public void FirstOrDefaultDisposesEmptyEnumerator()
     {
         var source = new EmptyEnumerable();
-        Assert.AreSame(ConverterResults.UnsetValue, new FirstOrDefaultConverter().Convert(source, null, null, null));
+        Assert.AreSame(
+            ConverterResults.UnsetValue,
+            new FirstOrDefaultConverter().Convert(source, null, null, null)
+        );
         Assert.IsTrue(source.Disposed);
-        Assert.IsNull(new FirstOrDefaultConverter().Convert(new object?[] { null }, null, null, null));
+        Assert.IsNull(
+            new FirstOrDefaultConverter().Convert(new object?[] { null }, null, null, null)
+        );
     }
 
     [TestMethod]
     public void UnavailableInputsAreNotConvertedIntoOrdinaryValues()
     {
-        ValueConverterBase[] singles = [new BoolToValueConverter<object>(), new BoolToSplitParameterConverter(),
-            new CalculatorConverter(), new CollectionCountCompareConverter(), new CollectionCountCompareByConverter(),
-            new DateTimeToStringConverter(), new DateTimeOffsetToStringConverter(), new EnumEqualsConverter(),
-            new EnumToEnumInfoConverter(), new EnumToEnumInfoDisplayConverter(), new EnumsToEnumInfosConverter(),
-            new EqualsConverter(), new EqualsToValueConverter<object>(), new FirstOrDefaultConverter(),
-            new GetDictionaryValueConverter(), new GuidToStringConverter(), new NullToBoolConverter(),
-            new NumberClampConverter(), new NumberCompareConverter(), new NumberCompareByConverter(),
-            new StringCaseConverter(), new StringCheckConverter(), new StringToNumberConverter(),
-            new TimeSpanToStringConverter(), new ToBoolConverter(), new ValueToEnumerableConverter(), new VersionToStringConverter()];
+        ValueConverterBase[] singles =
+        [
+            new BoolToValueConverter<object>(),
+            new BoolToSplitParameterConverter(),
+            new CalculatorConverter(),
+            new CollectionCountCompareConverter(),
+            new CollectionCountCompareByConverter(),
+            new DateTimeToStringConverter(),
+            new DateTimeOffsetToStringConverter(),
+            new EnumEqualsConverter(),
+            new EnumToEnumInfoConverter(),
+            new EnumToEnumInfoDisplayConverter(),
+            new EnumsToEnumInfosConverter(),
+            new EqualsConverter(),
+            new EqualsToValueConverter<object>(),
+            new FirstOrDefaultConverter(),
+            new GetDictionaryValueConverter(),
+            new GuidToStringConverter(),
+            new NullToBoolConverter(),
+            new NumberClampConverter(),
+            new NumberCompareConverter(),
+            new NumberCompareByConverter(),
+            new StringCaseConverter(),
+            new StringCheckConverter(),
+            new StringToNumberConverter(),
+            new TimeSpanToStringConverter(),
+            new ToBoolConverter(),
+            new ValueToEnumerableConverter(),
+            new VersionToStringConverter(),
+        ];
         var fallback = new object();
         foreach (var c in singles)
         {
             c.GetDefaultResult = () => fallback;
-            foreach (var sentinel in new[] { ConverterResults.UnsetValue, ConverterResults.DoNothing })
+            foreach (
+                var sentinel in new[] { ConverterResults.UnsetValue, ConverterResults.DoNothing }
+            )
                 Assert.AreSame(fallback, c.Convert(sentinel, null, null, null), c.GetType().Name);
         }
-        MultiValueConverterBase[] multis = [new AllBoolToValueMultiConverter<object>(), new AllEqualsMultiConverter<object>(),
-            new AnyEqualsMultiConverter<object>(), new EqualsCountMultiConverter<object>()];
+        MultiValueConverterBase[] multis =
+        [
+            new AllBoolToValueMultiConverter<object>(),
+            new AllEqualsMultiConverter<object>(),
+            new AnyEqualsMultiConverter<object>(),
+            new EqualsCountMultiConverter<object>(),
+        ];
         foreach (var c in multis)
         {
             c.GetDefaultResult = () => fallback;
-            Assert.AreSame(fallback, c.Convert([ConverterResults.UnsetValue, null], null, null, null), c.GetType().Name);
+            Assert.AreSame(
+                fallback,
+                c.Convert([ConverterResults.UnsetValue, null], null, null, null),
+                c.GetType().Name
+            );
             Assert.AreSame(fallback, c.Convert(null!, null, null, null), c.GetType().Name);
         }
     }
@@ -211,8 +362,14 @@ public sealed class InputBoundaryTests
     [DataRow("bad")]
     public void InvalidComparisonParametersReturnDefault(string parameter)
     {
-        Assert.AreSame(ConverterResults.UnsetValue, new NumberCompareByConverter().Convert(1, null, parameter, null));
-        Assert.AreSame(ConverterResults.UnsetValue, new CollectionCountCompareByConverter().Convert(new[] { 1 }, null, parameter, null));
+        Assert.AreSame(
+            ConverterResults.UnsetValue,
+            new NumberCompareByConverter().Convert(1, null, parameter, null)
+        );
+        Assert.AreSame(
+            ConverterResults.UnsetValue,
+            new CollectionCountCompareByConverter().Convert(new[] { 1 }, null, parameter, null)
+        );
     }
 
     private sealed class ThrowingValue
@@ -224,9 +381,13 @@ public sealed class InputBoundaryTests
     {
         public bool Disposed { get; private set; }
         public object Current => throw new InvalidOperationException();
+
         public IEnumerator GetEnumerator() => this;
+
         public bool MoveNext() => false;
+
         public void Reset() => throw new NotSupportedException();
+
         public void Dispose() => Disposed = true;
     }
 }

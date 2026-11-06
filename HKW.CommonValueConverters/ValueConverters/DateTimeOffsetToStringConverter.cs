@@ -69,8 +69,20 @@ public class DateTimeOffsetToStringConverter : ValueConverterBase
         bool parsed;
         try
         {
-            parsed = DateTimeOffset.TryParseExact(str, format, culture, DateTimeStyles.None, out parsedDateTimeOffset)
-                || DateTimeOffset.TryParse(str, culture, DateTimeStyles.None, out parsedDateTimeOffset);
+            parsed =
+                DateTimeOffset.TryParseExact(
+                    str,
+                    format,
+                    culture,
+                    DateTimeStyles.None,
+                    out parsedDateTimeOffset
+                )
+                || DateTimeOffset.TryParse(
+                    str,
+                    culture,
+                    DateTimeStyles.None,
+                    out parsedDateTimeOffset
+                );
         }
         catch (FormatException) when (culture.GetType() == typeof(CultureInfo))
         {

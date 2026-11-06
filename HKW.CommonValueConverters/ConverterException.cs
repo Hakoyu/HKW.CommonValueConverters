@@ -1,7 +1,7 @@
 ﻿namespace HKW.CommonValueConverters;
 
 /// <summary>
-/// 转换器异常
+/// 转换器报告的 <see cref="Exception"/>.
 /// </summary>
 public class ConverterException : Exception
 {

@@ -6,17 +6,17 @@
 public enum StringCheckType
 {
     /// <summary>
-    /// 空
+    /// 仅检查 <see langword="null"/>.
     /// </summary>
     Null,
 
     /// <summary>
-    /// 空或空字符
+    /// 使用 <see cref="string.IsNullOrEmpty"/> 检查空值或空字符串.
     /// </summary>
     NullOrEmpty,
 
     /// <summary>
-    /// 空或空白字符
+    /// 使用 <see cref="string.IsNullOrWhiteSpace"/> 检查空值或空白字符.
     /// </summary>
     NullOrWhiteSpace,
 }

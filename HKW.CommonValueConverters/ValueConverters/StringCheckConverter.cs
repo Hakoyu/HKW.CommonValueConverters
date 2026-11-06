@@ -3,7 +3,7 @@
 namespace HKW.CommonValueConverters;
 
 /// <summary>
-/// 字符串是null或者空转换器
+/// 检查字符串是否为 <see langword="null"/> 或空的转换器
 /// </summary>
 public class StringCheckConverter : InvertibleValueConverterBase
 {

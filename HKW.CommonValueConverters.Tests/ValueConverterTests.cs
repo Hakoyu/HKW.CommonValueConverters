@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Globalization;
 using HKW.CommonValueConverters;
+using HKW.HKWUtils;
 
 namespace HKW.CommonValueConvertersTest;
 
@@ -62,10 +63,27 @@ public sealed class ValueConverterTests
     }
 
     [TestMethod]
-    public void CalculatorConverter()
+    [DataRow("8")]
+    [DataRow("+8")]
+    [DataRow("-8")]
+    [DataRow("*8")]
+    [DataRow("/8")]
+    [DataRow("%8")]
+    public void CalculatorConverter(string parameter)
     {
         var c = new CalculatorConverter();
-        Assert.AreEqual(5, c.Convert(2, null, 3, null));
+        var op = ArithmeticOperatorType.Addition;
+        if (char.IsNumber(parameter[0]) is false)
+            op = NumberUtils.GetArithmeticOperatorType(parameter[0]);
+        Assert.AreEqual(
+            NumberUtils.Arithmetic(
+                2,
+                parameter[(char.IsNumber(parameter[0]) ? 0 : 1)..],
+                c.GetNumberType(),
+                op
+            ),
+            c.Convert(2, null, parameter, null)
+        );
     }
 
     [TestMethod]
@@ -275,7 +293,10 @@ public sealed class ValueConverterTests
         Assert.AreEqual("VALUE", c.Convert("value", null, "U", CultureInfo.InvariantCulture));
         Assert.AreEqual("value", c.Convert("VALUE", null, "L", CultureInfo.InvariantCulture));
         Assert.AreEqual("Value", c.Convert("value", null, "T", CultureInfo.InvariantCulture));
-        Assert.AreSame(ConverterResults.UnsetValue, c.Convert("value", null, "Unknown", CultureInfo.InvariantCulture));
+        Assert.AreSame(
+            ConverterResults.UnsetValue,
+            c.Convert("value", null, "Unknown", CultureInfo.InvariantCulture)
+        );
     }
 
     [TestMethod]
