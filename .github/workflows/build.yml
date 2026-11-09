@@ -23,7 +23,13 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet build --configuration Release ./HKW.CommonValueConverters/HKW.CommonValueConverters.csproj
+        run: dotnet build --configuration Release
+
+      - name: Test
+        run: dotnet test --configuration Release
+      
+      - name: Pack library
+        run: dotnet pack --configuration Release --no-build --output ./artifacts
 
       # 登录并获取临时 API Key
       - name: NuGet login (OIDC → temp API key)
@@ -36,4 +42,4 @@ jobs:
 
       # 推送到 NuGet.org
       - name: NuGet push
-        run: dotnet nuget push "./HKW.CommonValueConverters/bin/Release/*.nupkg" --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+        run: dotnet nuget push "./artifacts/*.nupkg" --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source "https://api.nuget.org/v3/index.json" --skip-duplicate
