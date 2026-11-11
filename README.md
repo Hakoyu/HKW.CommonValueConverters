@@ -8,7 +8,7 @@
 | `HKW.CommonValueConverters.WPF` | `net10.0-windows` | WPF `DependencyObject`、依赖属性及转换器接口 |
 | `HKW.CommonValueConverters.Avalonia` | `net10.0` | Avalonia 12.1.5 `AvaloniaObject`、StyledProperty 及转换器接口 |
 
-平台库引用核心，每个包装器独占核心实例，不复制转换算法。每个平台提供 28 个单值、10 个多值包装器，以及 6 个泛型家族的同名非泛型 `object?` 版本：`BoolToValueConverter`、`EqualsToValueConverter`、`AllBoolToValueMultiConverter`、`AllEqualsMultiConverter`、`AnyEqualsMultiConverter`、`EqualsCountMultiConverter`。
+平台库引用核心，每个包装器独占核心实例，复用通用转换算法。两个平台共有 28 个单值、10 个多值包装器，以及 6 个泛型家族的同名非泛型 `object?` 版本：`BoolToValueConverter`、`EqualsToValueConverter`、`AllBoolToValueMultiConverter`、`AllEqualsMultiConverter`、`AnyEqualsMultiConverter`、`EqualsCountMultiConverter`。WPF 另外提供 17 个平台专用转换器及便捷预设（14 个单值、3 个多值），共 61 个公开转换器类型；Avalonia 保持原有 44 个类型。WPF 专用算法的内部实现位于 WPF 程序集，不向平台无关核心引入 WPF 依赖。
 
 仓库内应用可通过 `ProjectReference` 引用相应平台项目；也可在本地构建包后从本地 NuGet 源引用。新增平台包未接入自动发布流程，不应假设 NuGet.org 已存在这些版本。
 
@@ -83,6 +83,60 @@ var converter = new HKW.CommonValueConverters.WPF.BoolToValueConverter<System.Wi
     FalseValue = System.Windows.Visibility.Collapsed,
 };
 ```
+
+### WPF 专用转换器与便捷预设
+
+| 类型 | 默认配置或转换方向 |
+|---|---|
+| `BoolToVisibilityConverter` | 真为 `Visible`，假为 `Collapsed` |
+| `BoolToFontWeightConverter` | 真为 `Bold`，假为 `Normal` |
+| `BoolToSolidColorBrushConverter` | 真为白色笔刷，假为黑色笔刷 |
+| `BoolToThicknessConverter` | 可配置真假边距，失败默认零边距 |
+| `BoolToStyleConverter` | 可配置真假 `Style` |
+| `BoolToStringConverter` | 可配置真假字符串，失败默认空字符串；不自动输出 `True`/`False` |
+| `BoolToDoubleConverter` / `BoolToInt32Converter` | 可配置真假数值，初始均为零，失败也为零；不是默认的 1/0 映射 |
+| `NullToTrueConverter` | 空值为真，其余有效输入为假；保留可配置映射属性 |
+| `EqualsToVisibilityConverter` | 相等为 `Visible`，不等或空输入为 `Collapsed` |
+| `AllBoolToVisibilityMultiConverter` | 全真为 `Visible`，全假、全空、混合和失败为 `Collapsed`；空集合为 `Visible` |
+| `AllIsTrueMultiConverter` | 默认检查所有值是否等于 `true`，空集合为 `true`；保留比较值、参数和反转配置 |
+| `BoolInverterConverter` | **仅接受 `bool`**：真变假，假变真；`null`、字符串、数字及其他对象返回 `DefaultResult` |
+| `BoolToSplitThicknessConverter` | 按布尔条件从分隔参数选数值，生成四边相同的 `Thickness` |
+| `MediaColorToSolidColorBrushConverter` | 正向 `Color → SolidColorBrush`，反向取颜色 |
+| `SolidColorBrushToMediaColorConverter` | 正向 `SolidColorBrush → Color`，反向创建笔刷 |
+| `MarginMultiConverter` | 多值依次设置左、上、右、下，可用 `HasRatio` 指定首值为比例 |
+
+预设继承对应泛型家族的配置能力和空值规则。例如，`BoolToVisibilityConverter` 默认将空输入视为假分支；只有开启 `IsNullable` 才使用 `NullValue`。两个颜色转换器支持双向转换，创建独立且未冻结的笔刷；其他新增转换器不支持反向转换，调用时抛出 `NotSupportedException`。
+
+在上述 WPF 命名空间下可以直接配置：
+
+```xml
+<c:BoolToVisibilityConverter x:Key="ShowWhenTrue" />
+<c:BoolToSplitThicknessConverter x:Key="SelectedPadding" Separator=";" />
+<c:MarginMultiConverter x:Key="ScaledMargin" HasRatio="True" />
+```
+
+```xml
+<Border Padding="{Binding IsSelected, Converter={StaticResource SelectedPadding}, ConverterParameter='8;2;0', Mode=OneWay}">
+    <Border.Margin>
+        <MultiBinding Converter="{StaticResource ScaledMargin}" Mode="OneWay">
+            <Binding Path="Scale" />
+            <Binding Path="Left" />
+            <Binding Path="Top" />
+            <Binding Path="Right" />
+            <Binding Path="Bottom" />
+        </MultiBinding>
+    </Border.Margin>
+</Border>
+```
+
+**边距与兼容性约定：**
+
+- 分段边距的参数分别对应真、假、空输入，默认分隔符为逗号；选中一个数值后四边统一设置。参数缺失、格式错误或非有限数值返回 `DefaultResult`。不提供旧初始化钩子或自定义字符串转换委托入口。
+- 多值边距不是 XAML 的统一值/水平垂直简写：`[2] → (2,0,0,0)`，`[2,3] → (2,3,0,0)`。比例模式 `[2,1,3] → (2,6,0,0)`。空输入或只有比例时返回零边距，数值槽的 `null` 按零处理。
+- 多值边距的哨兵、超长输入、普通转换错误、非有限值和比例溢出返回 `DefaultResult`，默认是零边距。显式设置为 `null`、`Binding.DoNothing` 或其他对象均有效；清除该依赖属性后恢复零边距。意外编程异常不被统一吞掉。
+- 两种边距转换的数值解析遵循 `PreferredCulture`，不固定使用当前文化。逗号作为小数点时建议将分段分隔符设置为分号。
+- 修复旧 `MediaColorToSolidColorBrushConverter` 的方向错误，不保留其原先与反向转换器重复的行为；错误类型或空值改为返回 `DefaultResult`，不再抛出旧的参数异常。
+- 不新增旧 `BoolInverteConverter` / `BoolInverter` 名称。严格取反使用 `BoolInverterConverter`；旧“与 false 比较”的需求可使用 `EqualsConverter` 并设置 `Other=false`。本次不是旧 API 的完全兼容替换，原 HKW.WPF 项目及调用方不自动修改。
 
 ## Avalonia 用法
 
@@ -241,6 +295,8 @@ public sealed class UpperCaseConverter : ValueConverterBase
 ## 验证与本地打包
 
 使用 .NET 10 SDK 和现有 MSTest/VSTest 配置。完整解决方案和 WPF 测试需要 Windows；Avalonia 项目本身不依赖 WPF。
+
+核心测试中的 [ConverterTestCoverageTests](HKW.CommonValueConverters.Tests/ConverterTestCoverageTests.cs) 分别检查核心程序集的所有非抽象单值和多值转换器, 包含泛型及间接子类, 不检查平台包装器. 对应测试必须是当前测试程序集内未标记 `Ignore` 的 MSTest 测试类中的有效测试方法, 类和方法上的 `Ignore` 均不计入. 方法名区分大小写, 可以是 `<转换器名称>` 或 `<转换器名称>_<非空测试内容>`, 泛型名称不含类型参数, 每个转换器至少匹配一个测试方法即可. 缺失时按组列出所有缺失类型并抛出 `InvalidOperationException`, 使检查失败; 命名不符的已有测试也会被报告为缺失. 这只是测试命名完整性检查, 不是代码覆盖率或行为验证.
 
 ```powershell
 dotnet restore HKW.CommonValueConverters.sln

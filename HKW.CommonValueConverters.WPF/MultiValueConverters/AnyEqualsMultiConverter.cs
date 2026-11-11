@@ -16,7 +16,7 @@ public class AnyEqualsMultiConverter<T> : InvertibleMultiValueConverterBase
         : base(new Core.AnyEqualsMultiConverter<T>())
     {
         var core = (Core.AnyEqualsMultiConverter<T>)CoreConverter;
-        core.GetValue = () => ConverterResultMapping.ToCoreValue(Value);
+        core.GetValue = CreateCoreGetter(ValueProperty);
         core.GetIsStringEquals = () => IsStringEquals;
     }
 

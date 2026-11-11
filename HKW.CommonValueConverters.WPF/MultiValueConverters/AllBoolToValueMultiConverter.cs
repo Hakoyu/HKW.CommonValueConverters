@@ -16,9 +16,9 @@ public class AllBoolToValueMultiConverter<T> : MultiValueConverterBase
         : base(new Core.AllBoolToValueMultiConverter<T>())
     {
         var core = (Core.AllBoolToValueMultiConverter<T>)CoreConverter;
-        core.GetTrueValue = () => ConverterResultMapping.ToCoreValue(TrueValue);
-        core.GetFalseValue = () => ConverterResultMapping.ToCoreValue(FalseValue);
-        core.GetNullValue = () => ConverterResultMapping.ToCoreValue(NullValue);
+        core.GetTrueValue = CreateCoreGetter(TrueValueProperty);
+        core.GetFalseValue = CreateCoreGetter(FalseValueProperty);
+        core.GetNullValue = CreateCoreGetter(NullValueProperty);
     }
 
     /// <inheritdoc/>

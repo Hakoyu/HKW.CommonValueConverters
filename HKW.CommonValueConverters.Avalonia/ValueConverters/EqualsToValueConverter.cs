@@ -17,9 +17,9 @@ public class EqualsToValueConverter<T> : ValueConverterBase
     {
         var core = (Core.EqualsToValueConverter<T>)CoreConverter;
         core.GetOther = () => ConverterResultMapping.ToCore(Other);
-        core.GetTrueValue = () => ConverterResultMapping.ToCoreValue(TrueValue);
-        core.GetFalseValue = () => ConverterResultMapping.ToCoreValue(FalseValue);
-        core.GetNullValue = () => ConverterResultMapping.ToCoreValue(NullValue);
+        core.GetTrueValue = CreateCoreGetter(TrueValueProperty);
+        core.GetFalseValue = CreateCoreGetter(FalseValueProperty);
+        core.GetNullValue = CreateCoreGetter(NullValueProperty);
         core.GetIsStringEquals = () => IsStringEquals;
     }
 

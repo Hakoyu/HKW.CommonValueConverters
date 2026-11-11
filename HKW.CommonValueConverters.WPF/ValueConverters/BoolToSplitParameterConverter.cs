@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Globalization;
 using System.Windows;
 using HKW.HKWUtils;
@@ -16,7 +17,7 @@ public class BoolToSplitParameterConverter : ValueConverterBase
     {
         var core = (Core.BoolToSplitParameterConverter)CoreConverter;
         core.GetSeparator = () => Separator;
-        core.ConvertSplitValue = value => ConvertSplitValue(value);
+        core.ConvertSplitValue = ConvertSplitValue;
     }
 
     /// <inheritdoc/>
@@ -29,6 +30,7 @@ public class BoolToSplitParameterConverter : ValueConverterBase
     /// <summary>
     /// 拆分转换参数以选取布尔结果时使用的分隔字符串.
     /// </summary>
+    [DefaultValue(Core.BoolToSplitParameterConverter.DefaultSeparator)]
     public string Separator
     {
         get => GetValue(SeparatorProperty);

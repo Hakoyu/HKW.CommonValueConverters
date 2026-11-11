@@ -85,7 +85,7 @@ public sealed class MultiValueConverterTests
     }
 
     [TestMethod]
-    public void GetDictionaryValueMulitiConverter()
+    public void GetDictionaryValueMultiConverter()
     {
         var c = new GetDictionaryValueMultiConverter() { GetDefaultResult = () => "Default" };
         IDictionary dictionary = new Dictionary<string, string> { ["Key"] = "Value" };
@@ -93,6 +93,49 @@ public sealed class MultiValueConverterTests
         Assert.AreEqual("Value", c.Convert([dictionary, "Key"], null, null, null));
         Assert.AreEqual("Default", c.Convert([dictionary, "Missing"], null, null, null));
         Assert.AreEqual("Default", c.Convert([dictionary], null, null, null));
+    }
+
+    [TestMethod]
+    public void GetDictionaryValueMultiConverter_PreservesNullAndObjectValues()
+    {
+        var value = new object();
+        IDictionary dictionary = new Hashtable { ["Null"] = null, ["Value"] = value };
+        var c = new GetDictionaryValueMultiConverter();
+
+        Assert.IsNull(c.Convert([dictionary, "Null"], null, null, null));
+        Assert.AreSame(value, c.Convert([dictionary, "Value"], null, null, null));
+    }
+
+    [TestMethod]
+    public void GetDictionaryValueMultiConverter_InvalidInputsUseDefault()
+    {
+        var fallback = new object();
+        var c = new GetDictionaryValueMultiConverter { GetDefaultResult = () => fallback };
+        IDictionary dictionary = new Hashtable
+        {
+            ["Unset"] = ConverterResults.UnsetValue,
+            ["DoNothing"] = ConverterResults.DoNothing,
+        };
+        IList<object?>[] inputs =
+        [
+            [],
+            [dictionary],
+            [dictionary, "Unset", "extra"],
+            [dictionary, null],
+            [dictionary, "Missing"],
+            [new object(), "Key"],
+            [null, "Key"],
+            [dictionary, "Unset"],
+            [dictionary, "DoNothing"],
+            [ConverterResults.UnsetValue, "Key"],
+            [ConverterResults.DoNothing, "Key"],
+            [dictionary, ConverterResults.UnsetValue],
+            [dictionary, ConverterResults.DoNothing],
+        ];
+
+        foreach (var input in inputs)
+            Assert.AreSame(fallback, c.Convert(input, null, null, null));
+        Assert.AreSame(fallback, c.Convert(null!, null, null, null));
     }
 
     [TestMethod]

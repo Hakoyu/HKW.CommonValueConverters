@@ -153,6 +153,15 @@ public abstract class ConverterBase : AvaloniaObject, Core.ICommonValueConverter
     }
 
     /// <summary>
+    /// 创建核心获取器
+    /// </summary>
+    /// <typeparam name="T">类型</typeparam>
+    /// <param name="property">属性</param>
+    /// <returns>获取器</returns>
+    protected Func<T> CreateCoreGetter<T>(Core.CommonDependencyProperty<T> property) =>
+        () => ConverterResultMapping.ToCoreValue(GetValue(property));
+
+    /// <summary>
     /// 检查平台线程访问并同步 <see cref="PreferredCulture"/> 到 <see cref="CoreConverter"/>; 文化选择仍由核心入口完成.
     /// </summary>
     protected void PrepareConversion()

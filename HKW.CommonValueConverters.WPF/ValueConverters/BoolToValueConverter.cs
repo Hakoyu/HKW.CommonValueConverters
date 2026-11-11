@@ -16,10 +16,10 @@ public class BoolToValueConverter<T> : InvertibleValueConverterBase
         : base(new Core.BoolToValueConverter<T>())
     {
         var core = (Core.BoolToValueConverter<T>)CoreConverter;
-        core.GetTrueValue = () => ConverterResultMapping.ToCoreValue(TrueValue);
-        core.GetFalseValue = () => ConverterResultMapping.ToCoreValue(FalseValue);
+        core.GetTrueValue = CreateCoreGetter(TrueValueProperty);
+        core.GetFalseValue = CreateCoreGetter(FalseValueProperty);
         core.GetIsNullable = () => IsNullable;
-        core.GetNullValue = () => ConverterResultMapping.ToCoreValue(NullValue);
+        core.GetNullValue = CreateCoreGetter(NullValueProperty);
     }
 
     /// <inheritdoc/>

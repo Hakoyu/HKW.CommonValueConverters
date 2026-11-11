@@ -24,7 +24,7 @@ public abstract class ConverterBase : DependencyObject, Core.ICommonValueConvert
         ArgumentNullException.ThrowIfNull(converter);
         CoreConverter = converter;
         _originalDefaultResult = converter.GetDefaultResult;
-        converter.GetDefaultResult = () => ConverterResultMapping.ToCore(DefaultResult);
+        converter.GetDefaultResult = CreateCoreGetter(DefaultResultProperty);
     }
 
     /// <summary>
@@ -72,12 +72,12 @@ public abstract class ConverterBase : DependencyObject, Core.ICommonValueConvert
     {
         get
         {
-            var value = GetValue(PreferredCultureProperty);
+            var value = GetMappedValue(PreferredCultureProperty);
             return value == UnconfiguredCulture
                 ? Core.ValueConvertersConfig.DefaultPreferredCulture
                 : value;
         }
-        set => SetValue(PreferredCultureProperty, value);
+        set => SetMappedValue(PreferredCultureProperty, value);
     }
 
     /// <summary>
@@ -151,6 +151,15 @@ public abstract class ConverterBase : DependencyObject, Core.ICommonValueConvert
             );
         return native;
     }
+
+    /// <summary>
+    /// 创建核心获取器
+    /// </summary>
+    /// <typeparam name="T">类型</typeparam>
+    /// <param name="property">属性</param>
+    /// <returns>获取器</returns>
+    protected Func<T> CreateCoreGetter<T>(Core.CommonDependencyProperty<T> property) =>
+        () => ConverterResultMapping.ToCoreValue(GetValue(property));
 
     /// <summary>
     /// 检查 <see cref="DependencyObject"/> 的线程访问并同步 <see cref="PreferredCulture"/>; 文化选择仍由核心入口完成.
