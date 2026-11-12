@@ -3,9 +3,9 @@
 namespace HKW.CommonValueConverters;
 
 /// <summary>
-/// 空到布尔转换器
+/// 空到布尔真值转换器
 /// </summary>
-public class NullToBoolConverter : InvertibleValueConverterBase
+public class NullToTrueConverter : InvertibleValueConverterBase
 {
     /// <inheritdoc/>
     protected override object? ConvertCore(

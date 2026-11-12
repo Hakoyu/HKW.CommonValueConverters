@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HKW.CommonValueConverters\HKW.CommonValueConverters.csproj" />
-    <PackageReference Include="Avalonia" Version="12.1.5" />
+    <PackageReference Include="Avalonia" Version="12.1.6" />
     <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>

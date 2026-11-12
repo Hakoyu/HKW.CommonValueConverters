@@ -312,7 +312,7 @@ public sealed class InputBoundaryTests
             new FirstOrDefaultConverter(),
             new GetDictionaryValueConverter(),
             new GuidToStringConverter(),
-            new NullToBoolConverter(),
+            new NullToTrueConverter(),
             new NumberClampConverter(),
             new NumberCompareConverter(),
             new NumberCompareByConverter(),

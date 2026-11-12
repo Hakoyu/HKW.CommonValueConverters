@@ -76,14 +76,14 @@ public class MarginMultiConverter : MultiValueConverterBase
             {
                 return GetDefaultResult();
             }
-            if (values.Count is 1 or 2)
+            if (values.Count - (hasRatio ? 1 : 0) == 1)
             {
                 if (
                     TryGetFiniteNumber(values[(hasRatio ? 1 : 0)], culture, out var number) is false
                 )
                     return GetDefaultResult();
-                else
-                    return new Thickness(number * ratio);
+                var result = number * ratio;
+                return double.IsFinite(result) ? new Thickness(result) : GetDefaultResult();
             }
             Span<double> sides = stackalloc double[4];
             sides.Clear();

@@ -214,7 +214,16 @@ public sealed class ValueConverterTests
         var fallback = new object();
         var c = new EnumToEnumInfoConverter { GetDefaultResult = () => fallback };
 
-        foreach (var value in new object?[] { null, "First", 0, ConverterResults.UnsetValue, ConverterResults.DoNothing })
+        foreach (
+            var value in new object?[]
+            {
+                null,
+                "First",
+                0,
+                ConverterResults.UnsetValue,
+                ConverterResults.DoNothing,
+            }
+        )
         {
             Assert.AreSame(fallback, c.Convert(value, null, null, null));
             Assert.AreSame(fallback, c.ConvertBack(value, null, null, null));
@@ -290,9 +299,9 @@ public sealed class ValueConverterTests
     }
 
     [TestMethod]
-    public void NullToBoolConverter()
+    public void NullToTrueConverter()
     {
-        var c = new NullToBoolConverter();
+        var c = new NullToTrueConverter();
 
         Assert.AreEqual(true, c.Convert(null, null, null, null));
         Assert.AreEqual(false, c.Convert("Value", null, null, null));
@@ -396,7 +405,16 @@ public sealed class ValueConverterTests
         Assert.AreEqual(false, c.Convert(null, null, null, null));
         c.GetNullValue = () => true;
         Assert.AreEqual(true, c.Convert(null, null, null, null));
-        foreach (var value in new object[] { "true", 1, new object(), ConverterResults.UnsetValue, ConverterResults.DoNothing })
+        foreach (
+            var value in new object[]
+            {
+                "true",
+                1,
+                new object(),
+                ConverterResults.UnsetValue,
+                ConverterResults.DoNothing,
+            }
+        )
             Assert.AreSame(fallback, c.Convert(value, null, null, null));
     }
 
@@ -412,7 +430,9 @@ public sealed class ValueConverterTests
         Assert.AreEqual('a', c.Convert("abc", null, null, null));
         Assert.AreSame(fallback, c.Convert("", null, null, null));
         Assert.AreSame(fallback, c.Convert(42, null, null, null));
-        foreach (var unavailable in new[] { ConverterResults.UnsetValue, ConverterResults.DoNothing })
+        foreach (
+            var unavailable in new[] { ConverterResults.UnsetValue, ConverterResults.DoNothing }
+        )
             Assert.AreSame(fallback, c.Convert(new[] { unavailable, first }, null, null, null));
     }
 
@@ -444,7 +464,16 @@ public sealed class ValueConverterTests
         Assert.AreEqual(true, c.Convert(6, null, 5, null));
         Assert.AreEqual(false, c.Convert(5, null, "5", null));
         Assert.AreEqual(true, c.Convert(5, null, "==5", null));
-        foreach (var parameter in new object?[] { null, "", ">bad", new object(), ConverterResults.UnsetValue })
+        foreach (
+            var parameter in new object?[]
+            {
+                null,
+                "",
+                ">bad",
+                new object(),
+                ConverterResults.UnsetValue,
+            }
+        )
             Assert.AreSame(fallback, c.Convert(5, null, parameter, null));
         Assert.AreSame(fallback, c.Convert("bad", null, 5, null));
         c.GetComparisonType = () => (ComparisonOperatorType)int.MaxValue;
@@ -480,7 +509,9 @@ public sealed class ValueConverterTests
 
         Assert.AreEqual(true, c.Convert("", null, "NullOrEmpty", null));
         Assert.AreSame(fallback, c.Convert("value", null, (StringCheckType)int.MaxValue, null));
-        foreach (var unavailable in new[] { ConverterResults.UnsetValue, ConverterResults.DoNothing })
+        foreach (
+            var unavailable in new[] { ConverterResults.UnsetValue, ConverterResults.DoNothing }
+        )
         {
             Assert.AreSame(fallback, c.Convert(unavailable, null, null, null));
             Assert.AreSame(fallback, c.Convert("value", null, unavailable, null));
@@ -490,7 +521,10 @@ public sealed class ValueConverterTests
     [TestMethod]
     public void StringToNumberConverter_NumberTypesAndStyles()
     {
-        var c = new StringToNumberConverter { PreferredCulture = PreferredCulture.ConverterCulture };
+        var c = new StringToNumberConverter
+        {
+            PreferredCulture = PreferredCulture.ConverterCulture,
+        };
         var culture = CultureInfo.InvariantCulture;
 
         Assert.AreEqual(42, c.Convert("42", null, null, culture));
@@ -499,7 +533,10 @@ public sealed class ValueConverterTests
         c.GetNumberStyles = () => NumberStyles.Number;
         c.GetNumberType = () => NumberType.Decimal;
         Assert.AreEqual(12.5m, c.Convert("12,5", null, null, CultureInfo.GetCultureInfo("fr-FR")));
-        Assert.AreEqual("12,5", c.ConvertBack(12.5m, null, null, CultureInfo.GetCultureInfo("fr-FR")));
+        Assert.AreEqual(
+            "12,5",
+            c.ConvertBack(12.5m, null, null, CultureInfo.GetCultureInfo("fr-FR"))
+        );
     }
 
     [TestMethod]
@@ -508,9 +545,21 @@ public sealed class ValueConverterTests
         var fallback = new object();
         var c = new StringToNumberConverter { GetDefaultResult = () => fallback };
 
-        foreach (var value in new object?[] { null, "", "bad", "2147483648", ConverterResults.UnsetValue, ConverterResults.DoNothing })
+        foreach (
+            var value in new object?[]
+            {
+                null,
+                "",
+                "bad",
+                "2147483648",
+                ConverterResults.UnsetValue,
+                ConverterResults.DoNothing,
+            }
+        )
             Assert.AreSame(fallback, c.Convert(value, null, null, CultureInfo.InvariantCulture));
-        foreach (var unavailable in new[] { ConverterResults.UnsetValue, ConverterResults.DoNothing })
+        foreach (
+            var unavailable in new[] { ConverterResults.UnsetValue, ConverterResults.DoNothing }
+        )
             Assert.AreSame(fallback, c.ConvertBack(unavailable, null, null, null));
         Assert.IsNull(c.ConvertBack(null, null, null, null));
         Assert.AreEqual("text", c.ConvertBack("text", null, null, null));
@@ -549,7 +598,9 @@ public sealed class ValueConverterTests
         c.GetNullValue = () => null;
         Assert.IsNull(c.Convert(null, null, null, null));
         Assert.IsNull(c.Convert("invalid", null, null, null));
-        foreach (var unavailable in new[] { ConverterResults.UnsetValue, ConverterResults.DoNothing })
+        foreach (
+            var unavailable in new[] { ConverterResults.UnsetValue, ConverterResults.DoNothing }
+        )
             Assert.AreSame(fallback, c.Convert(unavailable, null, null, null));
     }
 
@@ -573,13 +624,19 @@ public sealed class ValueConverterTests
         var c = new ValueToEnumerableConverter { GetDefaultResult = () => fallback };
 
         Assert.IsNull(c.Convert(null, null, null, null));
-        foreach (var unavailable in new[] { ConverterResults.UnsetValue, ConverterResults.DoNothing })
+        foreach (
+            var unavailable in new[] { ConverterResults.UnsetValue, ConverterResults.DoNothing }
+        )
             Assert.AreSame(fallback, c.Convert(unavailable, null, null, null));
     }
 
     private enum DisplayEnumType
     {
-        [Display(Name = "First name", ShortName = "First short name", Description = "First description")]
+        [Display(
+            Name = "First name",
+            ShortName = "First short name",
+            Description = "First description"
+        )]
         First,
     }
 

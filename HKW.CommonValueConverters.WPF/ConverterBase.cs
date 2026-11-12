@@ -24,7 +24,7 @@ public abstract class ConverterBase : DependencyObject, Core.ICommonValueConvert
         ArgumentNullException.ThrowIfNull(converter);
         CoreConverter = converter;
         _originalDefaultResult = converter.GetDefaultResult;
-        converter.GetDefaultResult = CreateCoreGetter(DefaultResultProperty);
+        converter.GetDefaultResult = () => ConverterResultMapping.ToCore(DefaultResult);
     }
 
     /// <summary>

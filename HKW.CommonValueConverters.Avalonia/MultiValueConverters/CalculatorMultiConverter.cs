@@ -30,7 +30,7 @@ public class CalculatorMultiConverter : MultiValueConverterBase
     /// </summary>
     public NumberType NumberType
     {
-        get => GetValue(NumberTypeProperty)!;
+        get => GetValue(NumberTypeProperty);
         set => SetValue(NumberTypeProperty, value);
     }
 }

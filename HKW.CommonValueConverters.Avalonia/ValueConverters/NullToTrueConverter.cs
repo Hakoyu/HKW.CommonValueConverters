@@ -1,16 +1,16 @@
+using System.Globalization;
+using global::Avalonia;
+using HKW.HKWUtils;
+using Core = global::HKW.CommonValueConverters;
+
 namespace HKW.CommonValueConverters.Avalonia;
 
 /// <summary>
-/// 默认将空值映射为 true, 将两种布尔结果均映射为 false.
+/// <see cref="Core.NullToTrueConverter"/> 的 Avalonia 包装器.
 /// </summary>
-public class NullToTrueConverter : BoolToValueConverter<bool>
+public class NullToTrueConverter : InvertibleValueConverterBase
 {
     /// <inheritdoc/>
     public NullToTrueConverter()
-    {
-        TrueValue = false;
-        FalseValue = false;
-        NullValue = true;
-        IsNullable = true;
-    }
+        : base(new Core.NullToTrueConverter()) { }
 }

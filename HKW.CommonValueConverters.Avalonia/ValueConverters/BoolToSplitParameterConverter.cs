@@ -16,7 +16,7 @@ public class BoolToSplitParameterConverter : ValueConverterBase
     {
         var core = (Core.BoolToSplitParameterConverter)CoreConverter;
         core.GetSeparator = () => Separator;
-        core.ConvertSplitValue = value => ConvertSplitValue(value);
+        core.ConvertSplitValue = (s, c) => ConvertSplitValue(s, c);
     }
 
     /// <inheritdoc/>
@@ -36,7 +36,7 @@ public class BoolToSplitParameterConverter : ValueConverterBase
     }
 
     /// <summary>
-    /// 转换选中的分割字符串; <see cref="Core.BoolToSplitParameterConverter.ConvertSplitValue"/> 每次调用读取最新委托.
+    /// 转换选中的分割字符串
     /// </summary>
-    public Func<string, object> ConvertSplitValue { get; set; } = value => value;
+    public Func<string, CultureInfo, object> ConvertSplitValue { get; set; } = (s, _) => s;
 }

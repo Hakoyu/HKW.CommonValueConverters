@@ -238,6 +238,7 @@ Avalonia.StyledProperty<object?> avaloniaProperty =
 - **刷新**：修改平台属性后，下一次转换读取新值，但属性变化**不自动保证重新触发绑定转换**；需要时由应用刷新绑定。
 - **方向**：单值反向能力遵循核心，不支持时抛出 `NotSupportedException`。WPF 多值反向桥接按项映射结果，但内置多值核心目前不实现反向；Avalonia 多值接口仅提供正向。
 - **类型**：接口调用与直接调用行为相同，不使用旧 `ResultToString`，不会把普通结果强制转字符串。
+- **分段边距**: `BoolToSplitThicknessConverter` 使用本次转换的有效文化解析分量, 非法或非有限数值返回 `DefaultResult`. `MarginMultiConverter` 的两槽输入保留左/上两项, 缺失方向为零; 缩放结果溢出也返回默认结果.
 
 包装器自动双向映射以下哨兵，调用平台包装器时无需手动转换：
 
@@ -248,7 +249,7 @@ Avalonia.StyledProperty<object?> avaloniaProperty =
 
 两个平台不会互相覆盖核心哨兵。映射覆盖输入、参数、多值槽位、可容纳对象的配置和结果；不会修改调用方多值集合，也不会递归改写业务对象内部的数据。对象类型配置的 CLR setter 会先将原生哨兵存为核心哨兵，getter 再映射回平台值，避免被属性系统消耗。直接使用 `SetValue`、样式或 XAML 设置哨兵时，应使用核心 `ConverterResults.UnsetValue` / `ConverterResults.DoNothing`：原生 `UnsetValue` 可能表示清除属性，Avalonia 的原生 `DoNothing` 会被视为忽略赋值。重置配置请显式调用 `ClearValue`。
 
-测试范围为核心及两个平台的转换器单元测试，未包含真实绑定、XAML 解析或 Avalonia Headless 测试；上面的 XAML 为使用示例，不代表已运行集成测试。
+测试范围包括核心转换器单元测试, 以及两个平台每个转换器的直接行为、真实 Binding/MultiBinding 和编译 XAML 集成用例. WPF 使用 STA Dispatcher, Avalonia 使用 Headless UI 会话, 验证初值、源通知更新及支持的双向转换. 泛型与非泛型类型分别覆盖; 泛型 XAML 使用不重写转换逻辑的测试专用封闭子类. 测试不弹出桌面窗口, 不验证截图、像素渲染或操作系统交互. 上面的 XAML 仍是使用示例, 实际集成验证以测试项目内的编译资源为准.
 
 ## 自定义转换器
 
@@ -296,7 +297,9 @@ public sealed class UpperCaseConverter : ValueConverterBase
 
 使用 .NET 10 SDK 和现有 MSTest/VSTest 配置。完整解决方案和 WPF 测试需要 Windows；Avalonia 项目本身不依赖 WPF。
 
-核心测试中的 [ConverterTestCoverageTests](HKW.CommonValueConverters.Tests/ConverterTestCoverageTests.cs) 分别检查核心程序集的所有非抽象单值和多值转换器, 包含泛型及间接子类, 不检查平台包装器. 对应测试必须是当前测试程序集内未标记 `Ignore` 的 MSTest 测试类中的有效测试方法, 类和方法上的 `Ignore` 均不计入. 方法名区分大小写, 可以是 `<转换器名称>` 或 `<转换器名称>_<非空测试内容>`, 泛型名称不含类型参数, 每个转换器至少匹配一个测试方法即可. 缺失时按组列出所有缺失类型并抛出 `InvalidOperationException`, 使检查失败; 命名不符的已有测试也会被报告为缺失. 这只是测试命名完整性检查, 不是代码覆盖率或行为验证.
+核心测试中的 [ConverterTestCoverageTests](HKW.CommonValueConverters.Tests/ConverterTestCoverageTests.cs) 检查核心程序集, 两个平台测试项目则分别检查各自平台程序集的非抽象单值和多值转换器, 包含泛型及间接子类. 对应测试必须是当前测试程序集内未标记 `Ignore` 的 MSTest 测试类中的有效测试方法, 类和方法上的 `Ignore` 均不计入. 方法名区分大小写, 可以是 `<转换器名称>` 或 `<转换器名称>_<非空测试内容>`, 泛型名称不含类型参数, 每个转换器至少匹配一个测试方法即可. 缺失时按组列出所有缺失类型并抛出 `InvalidOperationException`, 使检查失败; 命名不符的已有测试也会被报告为缺失. 命名检查不等于代码覆盖率; 平台测试另以类型身份核对行为、Binding 和 XAML 用例矩阵, 防止同名泛型/非泛型类型互相掩盖遗漏.
+
+平台 UI 测试必须通过各自的线程调度辅助执行, 不跨线程复用转换器或控件. WPF 测试需要 Windows Desktop runtime; Avalonia 测试依赖与生产库版本一致的 `Avalonia.Headless` (12.1.5), 保留 MSTest 运行入口. 每个用例独立创建状态并清理绑定, 全局文化或配置变更须恢复. 真实绑定及编译 XAML 用例随普通 `dotnet test` 自动执行, 无需单独启动桌面应用.
 
 ```powershell
 dotnet restore HKW.CommonValueConverters.sln

@@ -32,7 +32,7 @@ public class BoolToSplitParameterConverter : ValueConverterBase
     /// <summary>
     /// 分割值转换器
     /// </summary>
-    public Func<string, object> ConvertSplitValue { get; set; } = s => s;
+    public Func<string, CultureInfo, object> ConvertSplitValue { get; set; } = (s, _) => s;
 
     /// <inheritdoc/>
     protected override object? ConvertCore(
@@ -42,7 +42,11 @@ public class BoolToSplitParameterConverter : ValueConverterBase
         CultureInfo culture
     )
     {
-        if (ConverterUtils.IsUnavailable(value) || parameter is not string str || string.IsNullOrWhiteSpace(str))
+        if (
+            ConverterUtils.IsUnavailable(value)
+            || parameter is not string str
+            || string.IsNullOrWhiteSpace(str)
+        )
             return GetDefaultResult();
         var r = ConverterUtils.GetBool(value, culture);
         var separator = GetSeparator();
@@ -52,11 +56,11 @@ public class BoolToSplitParameterConverter : ValueConverterBase
         if (spilt.Length == 0)
             return GetDefaultResult();
         if (spilt.Length >= 1 && r is true)
-            return ConvertSplitValue(spilt[0]);
+            return ConvertSplitValue(spilt[0], culture);
         else if (spilt.Length >= 2 && r is false)
-            return ConvertSplitValue(spilt[1]);
+            return ConvertSplitValue(spilt[1], culture);
         else if (spilt.Length >= 3 && value is null)
-            return ConvertSplitValue(spilt[2]);
+            return ConvertSplitValue(spilt[2], culture);
         return GetDefaultResult();
     }
 }

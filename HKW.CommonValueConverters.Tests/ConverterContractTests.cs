@@ -82,7 +82,7 @@ public sealed class ConverterContractTests
     public void UnsupportedReverseConversionRemainsExplicit()
     {
         Assert.ThrowsExactly<NotSupportedException>(() =>
-            new NullToBoolConverter().ConvertBack(null, null, null, null)
+            new NullToTrueConverter().ConvertBack(null, null, null, null)
         );
         Assert.ThrowsExactly<NotSupportedException>(() =>
             new AllEqualsMultiConverter<object>().ConvertBack(null, [], null, null)
