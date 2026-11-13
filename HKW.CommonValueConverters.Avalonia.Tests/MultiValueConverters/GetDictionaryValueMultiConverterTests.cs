@@ -58,17 +58,13 @@ public sealed class GetDictionaryValueMultiConverterTests
     )
     {
         var converter = new GetDictionaryValueMultiConverter();
-        var subject = AvaloniaConversionAdapter.Multi(
-            configuration,
-            converter,
-            settings =>
-            {
-                if (settings.PreferredCulture is { } culture)
-                    converter.PreferredCulture = culture;
-                if (settings.GetDefaultResult is not null)
-                    converter.DefaultResult = settings.GetDefaultResult();
-            }
-        );
+        var subject = AvaloniaConversionAdapter.Multi(configuration, converter, settings =>
+        {
+            if (settings.PreferredCulture is { } culture)
+                converter.PreferredCulture = culture;
+            if (settings.GetDefaultResult is not null)
+                converter.DefaultResult = settings.GetDefaultResult();
+        });
         Assert.AreEqual(typeof(GetDictionaryValueMultiConverter), subject.Instance.GetType());
         return subject;
     }
@@ -79,22 +75,20 @@ public sealed class GetDictionaryValueMultiConverterTests
         {
             yield return
             [
-                new AvaloniaIntegrationCase(
-                    "integration:GetDictionaryValueMultiConverter",
-                    () =>
-                        new ConverterCase(
-                            "GetDictionaryValueMultiConverter",
-                            typeof(GetDictionaryValueMultiConverter),
-                            () => new GetDictionaryValueMultiConverter(),
-                            [new Hashtable { ["a"] = "first", ["b"] = "second" }, "a"],
-                            "first",
-                            [
-                                new(1, "b", "second"),
-                                new(0, new Hashtable { ["b"] = "changed" }, "changed"),
-                            ],
-                            null,
-                            true
-                        )
+                new AvaloniaIntegrationCase("integration:GetDictionaryValueMultiConverter", () =>
+                    new ConverterCase(
+                        "GetDictionaryValueMultiConverter",
+                        typeof(GetDictionaryValueMultiConverter),
+                        () => new GetDictionaryValueMultiConverter(),
+                        [new Hashtable { ["a"] = "first", ["b"] = "second" }, "a"],
+                        "first",
+                        [
+                            new(1, "b", "second"),
+                            new(0, new Hashtable { ["b"] = "changed" }, "changed"),
+                        ],
+                        null,
+                        true
+                    )
                 ),
             ];
         }

@@ -26,17 +26,13 @@ public sealed class FirstStringStateToOtherStringMultiConverterTests
     )
     {
         var converter = new FirstStringStateToOtherStringMultiConverter();
-        var subject = AvaloniaConversionAdapter.Multi(
-            configuration,
-            converter,
-            settings =>
-            {
-                if (settings.PreferredCulture is { } culture)
-                    converter.PreferredCulture = culture;
-                if (settings.GetDefaultResult is not null)
-                    converter.DefaultResult = settings.GetDefaultResult();
-            }
-        );
+        var subject = AvaloniaConversionAdapter.Multi(configuration, converter, settings =>
+        {
+            if (settings.PreferredCulture is { } culture)
+                converter.PreferredCulture = culture;
+            if (settings.GetDefaultResult is not null)
+                converter.DefaultResult = settings.GetDefaultResult();
+        });
         Assert.AreEqual(
             typeof(FirstStringStateToOtherStringMultiConverter),
             subject.Instance.GetType()
@@ -111,9 +107,8 @@ public sealed class FirstStringStateToOtherStringMultiConverterTests
         PlatformThread.Run(() =>
         {
             var c = scenario.Create();
-            AvaloniaPropertyAssertions.Defaults(
-                c,
-                () => new FirstStringStateToOtherStringMultiConverter()
+            AvaloniaPropertyAssertions.Defaults(c, () =>
+                new FirstStringStateToOtherStringMultiConverter()
             );
             var converter = (FirstStringStateToOtherStringMultiConverter)c.Create();
             var pristine = new FirstStringStateToOtherStringMultiConverter();

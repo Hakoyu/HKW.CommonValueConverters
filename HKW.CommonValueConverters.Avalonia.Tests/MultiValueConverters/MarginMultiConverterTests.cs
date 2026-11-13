@@ -86,24 +86,22 @@ public sealed class MarginMultiConverterTests
         {
             yield return
             [
-                new AvaloniaIntegrationCase(
-                    "integration:MarginMultiConverter",
-                    () =>
-                        new ConverterCase(
-                            "MarginMultiConverter",
-                            typeof(MarginMultiConverter),
-                            () => new MarginMultiConverter(),
-                            [1, 2, 3, 4],
-                            new Thickness(1, 2, 3, 4),
-                            [
-                                new(0, 5, new Thickness(5, 2, 3, 4)),
-                                new(1, 6, new Thickness(5, 6, 3, 4)),
-                                new(2, 7, new Thickness(5, 6, 7, 4)),
-                                new(3, 8, new Thickness(5, 6, 7, 8)),
-                            ],
-                            null,
-                            true
-                        )
+                new AvaloniaIntegrationCase("integration:MarginMultiConverter", () =>
+                    new ConverterCase(
+                        "MarginMultiConverter",
+                        typeof(MarginMultiConverter),
+                        () => new MarginMultiConverter(),
+                        [1, 2, 3, 4],
+                        new Thickness(1, 2, 3, 4),
+                        [
+                            new(0, 5, new Thickness(5, 2, 3, 4)),
+                            new(1, 6, new Thickness(5, 6, 3, 4)),
+                            new(2, 7, new Thickness(5, 6, 7, 4)),
+                            new(3, 8, new Thickness(5, 6, 7, 8)),
+                        ],
+                        null,
+                        true
+                    )
                 ),
             ];
         }
@@ -174,9 +172,24 @@ public sealed class MarginMultiConverterTests
     public Task DefaultFallbackMatchesPlatformPreset() =>
         PlatformThread.Run(() =>
         {
+            var margin = new MarginMultiConverter();
             Assert.AreEqual(
                 new Thickness(),
-                new MarginMultiConverter().Convert(["invalid"], typeof(Thickness), null, null)
+                margin.Convert(["invalid"], typeof(Thickness), null, null)
+            );
+            margin.DefaultResult = "fallback";
+            Assert.AreEqual("fallback", margin.Convert(["invalid"], typeof(Thickness), null, null));
+            margin.ClearValue(ConverterBase.DefaultResultProperty);
+            Assert.AreEqual(
+                new Thickness(),
+                margin.Convert([double.NaN], typeof(Thickness), null, null)
+            );
+            var ratio = new MarginMultiConverter { HasRatio = true };
+            Assert.AreEqual(new Thickness(2), ratio.Convert([2, 1], null, null, null));
+            Assert.AreEqual(new Thickness(2, 4, 0, 0), ratio.Convert([2, 1, 2], null, null, null));
+            Assert.AreEqual(
+                new Thickness(2, 4, 6, 8),
+                ratio.Convert([2, 1, 2, 3, 4], null, null, null)
             );
         });
 }

@@ -21,6 +21,23 @@ public sealed class BoolToThicknessConverterTests
             )
         );
 
+    [TestMethod]
+    public Task PlatformDefaultsAndInvalidInputs_AreExplicit() =>
+        PlatformThread.Run(() =>
+        {
+            var converter = new BoolToThicknessConverter();
+            Assert.AreEqual(new Thickness(0), converter.Convert(new object(), null, null, null));
+            Assert.AreSame(
+                AvaloniaProperty.UnsetValue,
+                converter.Convert(AvaloniaProperty.UnsetValue, null, null, null)
+            );
+            converter.DefaultResult = "fallback";
+            Assert.AreEqual(
+                "fallback",
+                converter.Convert(AvaloniaProperty.UnsetValue, null, null, null)
+            );
+        });
+
     public static IEnumerable<object[]> IntegrationCases
     {
         get

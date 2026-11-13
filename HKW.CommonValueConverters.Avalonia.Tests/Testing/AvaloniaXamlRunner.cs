@@ -6,7 +6,7 @@ internal static class AvaloniaXamlRunner
 {
     public static void Run(
         ConverterCase c,
-        Action<ConverterBase, ConverterBase> compareConfiguration
+        Action<ConverterBase, ConverterBase>? compareConfiguration = null
     )
     {
         using var errors = new BindingErrorScope();
@@ -22,7 +22,12 @@ internal static class AvaloniaXamlRunner
             Assert.AreEqual(c.Type, c.Type.IsGenericType ? actualType.BaseType : actualType);
             Assert.IsTrue(c.Type.IsInstanceOfType(converter));
             var expectedConfiguration = c.Create();
-            compareConfiguration(expectedConfiguration, converter);
+            AvaloniaPropertyAssertions.CompareRegisteredProperties(
+                c.Type,
+                expectedConfiguration,
+                converter
+            );
+            compareConfiguration?.Invoke(expectedConfiguration, converter);
             var vm = new TestViewModel(c.Initial);
             target.DataContext = vm;
             ConverterAssertions.VerifyUpdates(c, target, vm);

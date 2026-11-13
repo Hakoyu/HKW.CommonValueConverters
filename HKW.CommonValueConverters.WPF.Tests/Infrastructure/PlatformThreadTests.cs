@@ -10,7 +10,7 @@ public sealed class PlatformThreadTests
     {
         Thread? worker = null;
         Dispatcher? dispatcher = null;
-        PlatformThread.Run(() =>
+        PlatformThread.RunIsolated(() =>
         {
             worker = Thread.CurrentThread;
             dispatcher = Dispatcher.CurrentDispatcher;
@@ -32,7 +32,7 @@ public sealed class PlatformThreadTests
         Thread? worker = null;
         var failure = new InvalidOperationException("Expected test failure.");
         var actual = Assert.ThrowsExactly<InvalidOperationException>(() =>
-            PlatformThread.Run(() =>
+            PlatformThread.RunIsolated(() =>
             {
                 worker = Thread.CurrentThread;
                 throw failure;
@@ -42,5 +42,25 @@ public sealed class PlatformThreadTests
         Assert.IsNotNull(worker);
         Assert.IsFalse(worker.IsAlive);
         PlatformThread.Run(() => Assert.IsTrue(Dispatcher.CurrentDispatcher.CheckAccess()));
+    }
+
+    [TestMethod]
+    public void SharedDispatcher_ReusesStaThreadAndRecoversAfterFailure()
+    {
+        Thread? first = null;
+        Thread? second = null;
+        PlatformThread.Run(() =>
+        {
+            first = Thread.CurrentThread;
+            Assert.AreEqual(ApartmentState.STA, first.GetApartmentState());
+        });
+        var failure = new InvalidOperationException("Expected shared thread failure.");
+        var actual = Assert.ThrowsExactly<InvalidOperationException>(() =>
+            PlatformThread.Run(() => throw failure)
+        );
+        Assert.AreSame(failure, actual);
+        PlatformThread.Run(() => second = Thread.CurrentThread);
+        Assert.IsNotNull(first);
+        Assert.AreSame(first, second);
     }
 }

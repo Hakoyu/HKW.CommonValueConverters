@@ -100,6 +100,52 @@ public sealed class ConverterTestCatalogTests
     }
 
     [TestMethod]
+    public void PlatformParityRequiresMatchingPlatformConvertersOrDocumentedExceptions()
+    {
+        ConverterTestCatalog.ValidatePlatformParity(
+            [typeof(BoolInverterConverter), typeof(BoolToValueConverter<int>)],
+            [typeof(BoolInverterConverter), typeof(BoolToValueConverter<string>)],
+            "HKW.CommonValueConverters.WPF"
+        );
+        var missing = Assert.ThrowsExactly<InvalidOperationException>(() =>
+            ConverterTestCatalog.ValidatePlatformParity(
+                [typeof(BoolInverterConverter), typeof(BoolToValueConverter<>)],
+                [typeof(BoolInverterConverter)],
+                "HKW.CommonValueConverters.WPF"
+            )
+        );
+        StringAssert.Contains(missing.Message, "Missing platform converter:");
+        StringAssert.Contains(
+            missing.Message,
+            "HKW.CommonValueConverters.WPF.BoolToValueConverter<>"
+        );
+        ConverterTestCatalog.ValidatePlatformParity(
+            [typeof(BoolInverterConverter), typeof(BoolToValueConverter<>)],
+            [typeof(BoolInverterConverter)],
+            "HKW.CommonValueConverters.WPF",
+            [new(typeof(BoolToValueConverter<>), "Handled by specialized platform converter.")]
+        );
+        var emptyReason = Assert.ThrowsExactly<InvalidOperationException>(() =>
+            ConverterTestCatalog.ValidatePlatformParity(
+                [typeof(BoolInverterConverter)],
+                [typeof(BoolInverterConverter)],
+                "HKW.CommonValueConverters.WPF",
+                [new(typeof(BoolInverterConverter), "")]
+            )
+        );
+        StringAssert.Contains(emptyReason.Message, "Platform exception requires a reason:");
+        var stale = Assert.ThrowsExactly<InvalidOperationException>(() =>
+            ConverterTestCatalog.ValidatePlatformParity(
+                [typeof(BoolInverterConverter)],
+                [typeof(BoolInverterConverter)],
+                "HKW.CommonValueConverters.WPF",
+                [new(typeof(GenericFixture), "Removed core converter.")]
+            )
+        );
+        StringAssert.Contains(stale.Message, "Stale platform exception:");
+    }
+
+    [TestMethod]
     public void ActualDynamicDataIsReadAndEmptyOrMissingProvidersFail()
     {
         var entries = ConverterTestCatalog.ReadCases(

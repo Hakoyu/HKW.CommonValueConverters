@@ -40,7 +40,13 @@ internal static class WpfXamlRunner
                 }
                 else
                     Assert.AreEqual(scenario.Type, converter.GetType());
-                scenario.AssertConfiguration(item.Factory(), converter);
+                var expected = item.Factory();
+                WpfPropertyAssertions.CompareRegisteredProperties(
+                    scenario.Type,
+                    expected,
+                    converter
+                );
+                scenario.AssertConfiguration?.Invoke(expected, converter);
                 var source = new TestViewModel();
                 source.Apply(item.Inputs[0]);
                 root.DataContext = source;

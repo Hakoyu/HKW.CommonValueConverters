@@ -50,19 +50,15 @@ public sealed class StringFormatMultiConverterTests
     )
     {
         var converter = new StringFormatMultiConverter();
-        var subject = AvaloniaConversionAdapter.Multi(
-            configuration,
-            converter,
-            settings =>
-            {
-                if (settings.PreferredCulture is { } culture)
-                    converter.PreferredCulture = culture;
-                if (settings.GetReplaceUnsetValue is not null)
-                    converter.ReplaceUnsetValue = settings.GetReplaceUnsetValue();
-                if (settings.GetDefaultResult is not null)
-                    converter.DefaultResult = settings.GetDefaultResult();
-            }
-        );
+        var subject = AvaloniaConversionAdapter.Multi(configuration, converter, settings =>
+        {
+            if (settings.PreferredCulture is { } culture)
+                converter.PreferredCulture = culture;
+            if (settings.GetReplaceUnsetValue is not null)
+                converter.ReplaceUnsetValue = settings.GetReplaceUnsetValue();
+            if (settings.GetDefaultResult is not null)
+                converter.DefaultResult = settings.GetDefaultResult();
+        });
         Assert.AreEqual(typeof(StringFormatMultiConverter), subject.Instance.GetType());
         return subject;
     }
@@ -73,19 +69,17 @@ public sealed class StringFormatMultiConverterTests
         {
             yield return
             [
-                new AvaloniaIntegrationCase(
-                    "integration:StringFormatMultiConverter",
-                    () =>
-                        new ConverterCase(
-                            "StringFormatMultiConverter",
-                            typeof(StringFormatMultiConverter),
-                            () => new StringFormatMultiConverter(),
-                            ["a", "b"],
-                            "a:b",
-                            [new(0, "c", "c:b"), new(1, "d", "c:d")],
-                            "{0}:{1}",
-                            true
-                        )
+                new AvaloniaIntegrationCase("integration:StringFormatMultiConverter", () =>
+                    new ConverterCase(
+                        "StringFormatMultiConverter",
+                        typeof(StringFormatMultiConverter),
+                        () => new StringFormatMultiConverter(),
+                        ["a", "b"],
+                        "a:b",
+                        [new(0, "c", "c:b"), new(1, "d", "c:d")],
+                        "{0}:{1}",
+                        true
+                    )
                 ),
             ];
         }

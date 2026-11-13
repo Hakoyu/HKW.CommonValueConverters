@@ -41,7 +41,6 @@ public sealed class __Converter__Tests
                 () => M<__Converter__>([[7, 7], [8, 7], [8, 8]], [true, false, true]),
                 "__Converter__.xaml",
                 "fallback",
-                CompareConfiguration,
                 () => WpfPropertyAssertions.VerifyInherited(() => new __Converter__())
             ),
         ],
@@ -63,12 +62,4 @@ public sealed class __Converter__Tests
     [DynamicData(nameof(ObjectCases))]
     [ConverterTest(typeof(__Converter__), ConverterTestLayer.Xaml)]
     public void Xaml(WpfPlatformCase scenario) => WpfXamlRunner.Verify(scenario);
-
-    private static void CompareConfiguration(ConverterBase configured, ConverterBase loaded)
-    {
-        var expected = (__Converter__)configured;
-        var actual = (__Converter__)loaded;
-        WpfAssert.AssertResult(expected.DefaultResult, actual.DefaultResult);
-        WpfAssert.AssertResult(expected.PreferredCulture, actual.PreferredCulture);
-    }
 }

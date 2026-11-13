@@ -104,9 +104,16 @@ public sealed class BoolToThicknessConverterTests
     public void PlatformDefaultsAndInvalidInputs_AreExplicit_0() =>
         PlatformThread.Run(() =>
         {
+            var converter = new BoolToThicknessConverter();
+            Assert.AreEqual(new Thickness(0), converter.Convert(new object(), null, null, null));
             Assert.AreEqual(
                 new Thickness(0),
-                new BoolToThicknessConverter().Convert(new object(), null, null, null)
+                converter.Convert(DependencyProperty.UnsetValue, null, null, null)
+            );
+            converter.DefaultResult = "fallback";
+            Assert.AreEqual(
+                "fallback",
+                converter.Convert(DependencyProperty.UnsetValue, null, null, null)
             );
         });
 

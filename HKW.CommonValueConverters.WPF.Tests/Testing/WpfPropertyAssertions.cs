@@ -33,9 +33,12 @@ internal static class WpfPropertyAssertions
                 Assert.AreEqual(field.FieldType.GenericTypeArguments[0], native.PropertyType);
                 Assert.AreEqual(field.Name[..^"Property".Length], native.Name);
                 Assert.IsTrue(native.OwnerType.IsAssignableFrom(scenario.Type));
-                Assert.IsNotNull(scenario.Type.GetProperty(native.Name));
+                var clrProperty = scenario.Type.GetProperty(native.Name);
+                Assert.IsNotNull(clrProperty);
+                Assert.IsTrue(clrProperty.CanRead && clrProperty.CanWrite);
             }
-            scenario.AssertConfiguration(first, second);
+            CompareRegisteredProperties(scenario.Type, first, second);
+            scenario.AssertConfiguration?.Invoke(first, second);
             scenario.VerifyWiring();
             first.DefaultResult = "first";
             second.DefaultResult = "second";
@@ -141,5 +144,32 @@ internal static class WpfPropertyAssertions
         WpfAssert.AssertResult(initialValue, get(first));
         WpfAssert.AssertResult(initial, convert(first));
         WpfAssert.AssertResult(otherInitial, convert(second));
+    }
+
+    public static void CompareRegisteredProperties(
+        Type converterType,
+        ConverterBase expected,
+        ConverterBase actual
+    )
+    {
+        var fields = converterType
+            .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+            .Where(field =>
+                field.FieldType.IsGenericType
+                && field.FieldType.GetGenericTypeDefinition()
+                    == typeof(Core.CommonDependencyProperty<>)
+            )
+            .ToArray();
+        Assert.IsTrue(fields.Length >= 2);
+        foreach (var field in fields)
+        {
+            var propertyName = field.Name[..^"Property".Length];
+            var clrProperty = converterType.GetProperty(propertyName);
+            Assert.IsNotNull(
+                clrProperty,
+                $"Missing CLR property '{propertyName}' for '{converterType.FullName}.{field.Name}'."
+            );
+            WpfAssert.AssertResult(clrProperty.GetValue(expected), clrProperty.GetValue(actual));
+        }
     }
 }

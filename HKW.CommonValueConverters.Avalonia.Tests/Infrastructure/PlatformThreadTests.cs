@@ -58,23 +58,17 @@ public sealed class PlatformThreadTests
     public async Task Dispatcher_ProcessesPostedWork()
     {
         using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-        await Task.Run(
-                () =>
-                    PlatformThread
-                        .Session.Dispatch(
-                            async () =>
-                            {
-                                var completion = new TaskCompletionSource(
-                                    TaskCreationOptions.RunContinuationsAsynchronously
-                                );
-                                Dispatcher.UIThread.Post(() => completion.SetResult());
-                                await completion.Task.WaitAsync(timeout.Token);
-                                return true;
-                            },
-                            timeout.Token
-                        )
-                        .GetAwaiter()
-                        .GetResult(),
+        await PlatformThread
+            .Session.Dispatch(
+                async () =>
+                {
+                    var completion = new TaskCompletionSource(
+                        TaskCreationOptions.RunContinuationsAsynchronously
+                    );
+                    Dispatcher.UIThread.Post(() => completion.SetResult());
+                    await completion.Task.WaitAsync(timeout.Token);
+                    return true;
+                },
                 timeout.Token
             )
             .WaitAsync(timeout.Token);

@@ -81,13 +81,5 @@ public sealed class __Converter__Tests
     [DynamicData(nameof(IntegrationCases))]
     [ConverterTest(typeof(__Converter__), ConverterTestLayer.Xaml)]
     public Task Xaml(AvaloniaIntegrationCase scenario) =>
-        PlatformThread.Run(() => AvaloniaXamlRunner.Run(scenario.Create(), CompareConfiguration));
-
-    private static void CompareConfiguration(ConverterBase configured, ConverterBase loaded)
-    {
-        var expected = (__Converter__)configured;
-        var actual = (__Converter__)loaded;
-        ConverterAssertions.ConfigurationEqual(expected.DefaultResult, actual.DefaultResult);
-        ConverterAssertions.ConfigurationEqual(expected.PreferredCulture, actual.PreferredCulture);
-    }
+        PlatformThread.Run(() => AvaloniaXamlRunner.Run(scenario.Create()));
 }

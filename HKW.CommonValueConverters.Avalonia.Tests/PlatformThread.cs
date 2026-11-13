@@ -31,11 +31,7 @@ public sealed class PlatformThread
     public static async Task Run(Action action)
     {
         using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-        await Task.Run(
-                () => _session!.Dispatch(action, timeout.Token).GetAwaiter().GetResult(),
-                timeout.Token
-            )
-            .WaitAsync(timeout.Token);
+        await _session!.Dispatch(action, timeout.Token).WaitAsync(timeout.Token);
     }
 
     public static void Drain() => Dispatcher.UIThread.RunJobs();

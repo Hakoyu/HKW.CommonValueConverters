@@ -23,6 +23,8 @@ public sealed record ConverterTestException(
     string Reason
 );
 
+public sealed record ConverterPlatformException(Type CoreConverterType, string Reason);
+
 public sealed record ConverterTestDescriptor(
     Type ConverterType,
     ConverterTestLayer Layer,
@@ -226,11 +228,72 @@ public static class ConverterTestCatalog
                 )
                 is false
             )
-                errors.Add($"Missing active layer: {type.FullName}/{layer}.");
+                errors.Add(
+                    $"Missing active layer: {type.FullName}/{layer}. Add [ConverterTest(typeof({FormatTypeName(type)}), ConverterTestLayer.{layer})] with an active data source (see templates/converter-tests/)."
+                );
         }
         if (errors.Count > 0)
             throw new InvalidOperationException(
                 string.Join(Environment.NewLine, errors.Order(StringComparer.Ordinal))
             );
+    }
+
+    public static void ValidatePlatformParity(
+        IEnumerable<Type> coreConverters,
+        IEnumerable<Type> platformConverters,
+        string platformNamespace,
+        IEnumerable<ConverterPlatformException>? exceptions = null
+    )
+    {
+        var coreTypes = coreConverters.Select(Identity).Distinct().ToArray();
+        var platformTypes = platformConverters.Select(Identity).Distinct().ToArray();
+        var exclusions = (exceptions ?? []).ToArray();
+        var errors = new List<string>();
+        if (coreTypes.Length == 0)
+            errors.Add("No core converters were discovered.");
+        if (platformTypes.Length == 0)
+            errors.Add($"No platform converters were discovered for {platformNamespace}.");
+        foreach (var exclusion in exclusions)
+        {
+            if (string.IsNullOrWhiteSpace(exclusion.Reason))
+                errors.Add(
+                    $"Platform exception requires a reason: {exclusion.CoreConverterType.FullName} ({platformNamespace})."
+                );
+            if (coreTypes.Contains(Identity(exclusion.CoreConverterType)) is false)
+                errors.Add(
+                    $"Stale platform exception: {exclusion.CoreConverterType.FullName} ({platformNamespace})."
+                );
+        }
+        var platformNames = platformTypes
+            .Select(type => type.Name)
+            .ToHashSet(StringComparer.Ordinal);
+        foreach (var coreType in coreTypes)
+        {
+            if (
+                exclusions.Any(exclusion =>
+                    Identity(exclusion.CoreConverterType) == coreType
+                    && string.IsNullOrWhiteSpace(exclusion.Reason) is false
+                )
+            )
+                continue;
+            if (platformNames.Contains(coreType.Name) is false)
+                errors.Add(
+                    $"Missing platform converter: {platformNamespace}.{FormatTypeName(coreType)} for core converter {coreType.FullName}. Add the platform wrapper and its tests (see templates/converter-tests/) or register a ConverterPlatformException."
+                );
+        }
+        if (errors.Count > 0)
+            throw new InvalidOperationException(
+                string.Join(Environment.NewLine, errors.Order(StringComparer.Ordinal))
+            );
+    }
+
+    private static string FormatTypeName(Type type)
+    {
+        if (type.IsGenericType is false)
+            return type.Name;
+        var tickIndex = type.Name.IndexOf('`');
+        var baseName = tickIndex >= 0 ? type.Name[..tickIndex] : type.Name;
+        var commas = new string(',', type.GetGenericArguments().Length - 1);
+        return $"{baseName}<{commas}>";
     }
 }

@@ -10,6 +10,21 @@ public sealed class ConverterTestCoverageTests
     [TestMethod]
     public void EveryPublicConverterHasActiveObjectOwnedCases()
     {
+        var coreTypes = ConverterTestCatalog.DiscoverConverters(
+            typeof(Core.CommonConverterBase).Assembly,
+            type =>
+                type.IsSubclassOf(typeof(Core.ValueConverterBase))
+                || type.IsSubclassOf(typeof(Core.MultiValueConverterBase))
+        );
+        var platformTypes = ConverterTestCatalog.DiscoverConverters(
+            typeof(ConverterBase).Assembly,
+            type => typeof(ConverterBase).IsAssignableFrom(type)
+        );
+        ConverterTestCatalog.ValidatePlatformParity(
+            coreTypes,
+            platformTypes,
+            typeof(ConverterBase).Namespace!
+        );
         var production = ConverterTestCatalog.DiscoverConverters(
             typeof(ConverterBase).Assembly,
             type => typeof(Core.ICommonValueConverter).IsAssignableFrom(type)

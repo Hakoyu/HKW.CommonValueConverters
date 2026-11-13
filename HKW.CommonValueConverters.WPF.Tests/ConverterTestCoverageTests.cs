@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Resources;
 using HKW.CommonValueConvertersTest.Testing;
+using Core = HKW.CommonValueConverters;
 
 namespace HKW.CommonValueConverters.WPF.Tests;
 
@@ -10,8 +11,19 @@ public sealed class ConverterTestCoverageTests
     [TestMethod]
     public void EveryProductionConverter_HasActiveExecutableLayers()
     {
+        var coreTypes = ConverterTestCatalog.DiscoverConverters(
+            typeof(Core.CommonConverterBase).Assembly,
+            type =>
+                type.IsSubclassOf(typeof(Core.ValueConverterBase))
+                || type.IsSubclassOf(typeof(Core.MultiValueConverterBase))
+        );
         var types = ConverterTestCatalog.DiscoverConverters(typeof(ConverterBase).Assembly, type =>
             typeof(ConverterBase).IsAssignableFrom(type)
+        );
+        ConverterTestCatalog.ValidatePlatformParity(
+            coreTypes,
+            types,
+            typeof(ConverterBase).Namespace!
         );
         var descriptors = ConverterTestCatalog.Discover(GetType().Assembly);
         ConverterTestCatalog.Validate(types, descriptors, Enum.GetValues<ConverterTestLayer>());
