@@ -40,29 +40,5 @@ public sealed class PlatformThread
 
     public static void Drain() => Dispatcher.UIThread.RunJobs();
 
-    [TestMethod]
-    public async Task Dispatcher_ProcessesPostedWork()
-    {
-        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-        await Task.Run(
-                () =>
-                    _session!
-                        .Dispatch(
-                            async () =>
-                            {
-                                var completion = new TaskCompletionSource(
-                                    TaskCreationOptions.RunContinuationsAsynchronously
-                                );
-                                Dispatcher.UIThread.Post(() => completion.SetResult());
-                                await completion.Task.WaitAsync(timeout.Token);
-                                return true;
-                            },
-                            timeout.Token
-                        )
-                        .GetAwaiter()
-                        .GetResult(),
-                timeout.Token
-            )
-            .WaitAsync(timeout.Token);
-    }
+    internal static HeadlessUnitTestSession Session => _session!;
 }

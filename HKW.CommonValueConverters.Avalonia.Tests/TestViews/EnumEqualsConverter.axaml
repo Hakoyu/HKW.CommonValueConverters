@@ -1,6 +1,19 @@
-<t:TestTarget xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:t="using:HKW.CommonValueConverters.Avalonia.Tests" xmlns:c="using:HKW.CommonValueConverters.Avalonia"
-    x:CompileBindings="False">
-  <t:TestTarget.Resources><c:EnumEqualsConverter x:Key="EnumEqualsConverter" ></c:EnumEqualsConverter></t:TestTarget.Resources>
-  <t:TestTarget.Result><Binding Path="V0" Mode="OneWay" Converter="{StaticResource EnumEqualsConverter}" ConverterParameter="First" /></t:TestTarget.Result>
+<t:TestTarget
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:t="using:HKW.CommonValueConverters.Avalonia.Tests"
+  xmlns:c="using:HKW.CommonValueConverters.Avalonia"
+  x:CompileBindings="False"
+>
+  <t:TestTarget.Resources>
+    <c:EnumEqualsConverter x:Key="EnumEqualsConverter"></c:EnumEqualsConverter>
+  </t:TestTarget.Resources>
+  <t:TestTarget.Result>
+    <Binding
+      Path="V0"
+      Mode="OneWay"
+      Converter="{StaticResource EnumEqualsConverter}"
+      ConverterParameter="First"
+    />
+  </t:TestTarget.Result>
 </t:TestTarget>

@@ -1,6 +1,20 @@
-<t:TestTarget xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:t="using:HKW.CommonValueConverters.Avalonia.Tests" xmlns:c="using:HKW.CommonValueConverters.Avalonia"
-    x:CompileBindings="False">
-  <t:TestTarget.Resources><c:BoolToNumberConverter x:Key="BoolToNumberConverter" ><c:BoolToNumberConverter.TrueValue><x:Int32>7</x:Int32></c:BoolToNumberConverter.TrueValue><c:BoolToNumberConverter.FalseValue><x:Int32>3</x:Int32></c:BoolToNumberConverter.FalseValue></c:BoolToNumberConverter></t:TestTarget.Resources>
-  <t:TestTarget.Result><Binding Path="V0" Mode="OneWay" Converter="{StaticResource BoolToNumberConverter}" /></t:TestTarget.Result>
+<t:TestTarget
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:t="using:HKW.CommonValueConverters.Avalonia.Tests"
+  xmlns:c="using:HKW.CommonValueConverters.Avalonia"
+  x:CompileBindings="False"
+>
+  <t:TestTarget.Resources>
+    <c:BoolToNumberConverter x:Key="BoolToNumberConverter">
+      <c:BoolToNumberConverter.TrueValue>
+        <x:Int32>7</x:Int32>
+      </c:BoolToNumberConverter.TrueValue><c:BoolToNumberConverter.FalseValue>
+        <x:Int32>3</x:Int32>
+      </c:BoolToNumberConverter.FalseValue>
+    </c:BoolToNumberConverter>
+  </t:TestTarget.Resources>
+  <t:TestTarget.Result>
+    <Binding Path="V0" Mode="OneWay" Converter="{StaticResource BoolToNumberConverter}" />
+  </t:TestTarget.Result>
 </t:TestTarget>

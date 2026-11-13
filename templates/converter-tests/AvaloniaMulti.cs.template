@@ -1,0 +1,93 @@
+using HKW.CommonValueConvertersTest;
+using HKW.CommonValueConvertersTest.Testing;
+using Core = HKW.CommonValueConverters;
+
+namespace HKW.CommonValueConverters.Avalonia.Tests;
+
+[TestClass]
+public sealed class __Converter__Tests
+{
+    public static IEnumerable<object[]> SharedCases => __Converter__Suite.Cases;
+
+    [TestMethod]
+    [DynamicData(nameof(SharedCases))]
+    [ConverterTest(typeof(__Converter__), ConverterTestLayer.Behavior)]
+    public Task Behavior(MultiConversionCase<__Converter__Suite.Configuration> scenario) =>
+        PlatformThread.Run(() => scenario.Run(CreateShared));
+
+    private static MultiConversionSubject<__Converter__Suite.Configuration> CreateShared(
+        __Converter__Suite.Configuration configuration
+    )
+    {
+        var converter = new __Converter__();
+        var subject = AvaloniaConversionAdapter.Multi(configuration, converter, settings =>
+        {
+            if (settings.GetDefaultResult is not null)
+                converter.DefaultResult = settings.GetDefaultResult();
+        });
+        Assert.AreEqual(typeof(__Converter__), subject.Instance.GetType());
+        return subject;
+    }
+
+    public static IEnumerable<object[]> IntegrationCases
+    {
+        get
+        {
+            yield return
+            [
+                new AvaloniaIntegrationCase(
+                    "integration:__Converter__",
+                    () => new ConverterCase(
+                        "__Converter__",
+                        typeof(__Converter__),
+                        () => new __Converter__(),
+                        [7, 7],
+                        true,
+                        [new(0, 8, false), new(1, 8, true)],
+                        null,
+                        true
+                    )
+                ),
+            ];
+        }
+    }
+
+    [TestMethod]
+    [DynamicData(nameof(IntegrationCases))]
+    [ConverterTest(typeof(__Converter__), ConverterTestLayer.Properties)]
+    public Task Properties(AvaloniaIntegrationCase scenario) => PlatformThread.Run(() =>
+    {
+        AvaloniaPropertyAssertions.Defaults(scenario.Create(), () => new __Converter__());
+        var converter = new __Converter__();
+        var pristine = new __Converter__();
+        AvaloniaPropertyAssertions.Property(
+            converter,
+            pristine,
+            __Converter__.PreferredCultureProperty,
+            nameof(__Converter__.PreferredCulture),
+            x => x.PreferredCulture,
+            (x, value) => x.PreferredCulture = value,
+            Core.PreferredCulture.CurrentCulture
+        );
+    });
+
+    [TestMethod]
+    [DynamicData(nameof(IntegrationCases))]
+    [ConverterTest(typeof(__Converter__), ConverterTestLayer.Binding)]
+    public Task Binding(AvaloniaIntegrationCase scenario) =>
+        PlatformThread.Run(() => AvaloniaBindingRunner.Run(scenario.Create()));
+
+    [TestMethod]
+    [DynamicData(nameof(IntegrationCases))]
+    [ConverterTest(typeof(__Converter__), ConverterTestLayer.Xaml)]
+    public Task Xaml(AvaloniaIntegrationCase scenario) =>
+        PlatformThread.Run(() => AvaloniaXamlRunner.Run(scenario.Create(), CompareConfiguration));
+
+    private static void CompareConfiguration(ConverterBase configured, ConverterBase loaded)
+    {
+        var expected = (__Converter__)configured;
+        var actual = (__Converter__)loaded;
+        ConverterAssertions.ConfigurationEqual(expected.DefaultResult, actual.DefaultResult);
+        ConverterAssertions.ConfigurationEqual(expected.PreferredCulture, actual.PreferredCulture);
+    }
+}

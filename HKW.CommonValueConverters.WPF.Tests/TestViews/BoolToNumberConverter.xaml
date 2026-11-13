@@ -1,0 +1,32 @@
+<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:c="clr-namespace:HKW.CommonValueConverters.WPF;assembly=HKW.CommonValueConverters.WPF"
+  xmlns:t="clr-namespace:HKW.CommonValueConverters.WPF.Tests"
+  xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+>
+  <DataTemplate x:Key="BoolToNumberConverter">
+    <Grid>
+      <Grid.Resources>
+        <c:BoolToNumberConverter x:Key="Converter">
+          <c:BoolToNumberConverter.TrueValue>
+            <sys:Int32>7</sys:Int32>
+          </c:BoolToNumberConverter.TrueValue>
+          <c:BoolToNumberConverter.FalseValue>
+            <sys:Int32>2</sys:Int32>
+          </c:BoolToNumberConverter.FalseValue>
+        </c:BoolToNumberConverter>
+      </Grid.Resources>
+      <t:TestTarget x:Name="Target">
+        <t:TestTarget.Result>
+          <Binding
+            Path="A"
+            Converter="{StaticResource Converter}"
+            Mode="OneWay"
+            ConverterCulture="en-US"
+          />
+        </t:TestTarget.Result>
+      </t:TestTarget>
+    </Grid>
+  </DataTemplate>
+</ResourceDictionary>

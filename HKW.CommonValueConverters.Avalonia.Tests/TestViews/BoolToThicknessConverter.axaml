@@ -1,6 +1,14 @@
-<t:TestTarget xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:t="using:HKW.CommonValueConverters.Avalonia.Tests" xmlns:c="using:HKW.CommonValueConverters.Avalonia"
-    x:CompileBindings="False">
-  <t:TestTarget.Resources><c:BoolToThicknessConverter x:Key="BoolToThicknessConverter" ></c:BoolToThicknessConverter></t:TestTarget.Resources>
-  <t:TestTarget.Result><Binding Path="V0" Mode="OneWay" Converter="{StaticResource BoolToThicknessConverter}" /></t:TestTarget.Result>
+<t:TestTarget
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:t="using:HKW.CommonValueConverters.Avalonia.Tests"
+  xmlns:c="using:HKW.CommonValueConverters.Avalonia"
+  x:CompileBindings="False"
+>
+  <t:TestTarget.Resources>
+    <c:BoolToThicknessConverter x:Key="BoolToThicknessConverter"></c:BoolToThicknessConverter>
+  </t:TestTarget.Resources>
+  <t:TestTarget.Result>
+    <Binding Path="V0" Mode="OneWay" Converter="{StaticResource BoolToThicknessConverter}" />
+  </t:TestTarget.Result>
 </t:TestTarget>

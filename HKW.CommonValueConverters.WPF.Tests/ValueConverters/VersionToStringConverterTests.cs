@@ -1,0 +1,123 @@
+using System.Windows.Data;
+using HKW.CommonValueConvertersTest;
+using HKW.CommonValueConvertersTest.Testing;
+using static HKW.CommonValueConverters.WPF.Tests.WpfScenario;
+
+namespace HKW.CommonValueConverters.WPF.Tests;
+
+[TestClass]
+public sealed class VersionToStringConverterTests
+{
+    public static IEnumerable<object[]> ObjectCases =>
+        [
+            [
+                new WpfPlatformCase(
+                    "VersionToStringConverter",
+                    typeof(VersionToStringConverter),
+                    () =>
+                        S<VersionToStringConverter>(
+                            new Version(1, 2),
+                            new Version(3, 4),
+                            "1.2",
+                            "3.4"
+                        ),
+                    "VersionToStringConverter.xaml",
+                    "fallback",
+                    (expected, actual) =>
+                    {
+                        var e = (VersionToStringConverter)expected;
+                        var a = (VersionToStringConverter)actual;
+                        WpfAssert.AssertResult(e.DefaultResult, a.DefaultResult);
+                        WpfAssert.AssertResult(e.PreferredCulture, a.PreferredCulture);
+                    },
+                    VerifyPropertyWiring
+                ),
+            ],
+        ];
+
+    [TestMethod]
+    [DynamicData(
+        nameof(ObjectCases),
+        DynamicDataDisplayName = nameof(WpfTestDisplay.Name),
+        DynamicDataDisplayNameDeclaringType = typeof(WpfTestDisplay)
+    )]
+    [ConverterTest(typeof(VersionToStringConverter), ConverterTestLayer.Properties)]
+    public void ObjectProperties(WpfPlatformCase scenario) =>
+        WpfPropertyAssertions.Verify(scenario);
+
+    [TestMethod]
+    [TestCategory("Binding")]
+    [DynamicData(
+        nameof(ObjectCases),
+        DynamicDataDisplayName = nameof(WpfTestDisplay.Name),
+        DynamicDataDisplayNameDeclaringType = typeof(WpfTestDisplay)
+    )]
+    [ConverterTest(typeof(VersionToStringConverter), ConverterTestLayer.Binding)]
+    public void ObjectBinding(WpfPlatformCase scenario) => WpfBindingRunner.Verify(scenario);
+
+    [TestMethod]
+    [TestCategory("Xaml")]
+    [DynamicData(
+        nameof(ObjectCases),
+        DynamicDataDisplayName = nameof(WpfTestDisplay.Name),
+        DynamicDataDisplayNameDeclaringType = typeof(WpfTestDisplay)
+    )]
+    [ConverterTest(typeof(VersionToStringConverter), ConverterTestLayer.Xaml)]
+    public void ObjectXaml(WpfPlatformCase scenario) => WpfXamlRunner.Verify(scenario);
+
+    [TestMethod]
+    [DynamicData(
+        nameof(ObjectCases),
+        DynamicDataDisplayName = nameof(WpfTestDisplay.Name),
+        DynamicDataDisplayNameDeclaringType = typeof(WpfTestDisplay)
+    )]
+    public void ObjectInputBoundaries(WpfPlatformCase scenario) =>
+        WpfBoundaryAssertions.Verify(scenario);
+
+    public static IEnumerable<object[]> BehaviorCases => VersionToStringConverterSuite.Cases;
+
+    [TestMethod]
+    [DynamicData(
+        nameof(BehaviorCases),
+        DynamicDataDisplayName = nameof(WpfTestDisplay.Name),
+        DynamicDataDisplayNameDeclaringType = typeof(WpfTestDisplay)
+    )]
+    [ConverterTest(typeof(VersionToStringConverter), ConverterTestLayer.Behavior)]
+    public void ObjectBehavior(
+        SingleConversionCase<VersionToStringConverterSuite.Configuration> scenario
+    ) =>
+        PlatformThread.Run(() =>
+            scenario.Run(configuration =>
+            {
+                var converter = new VersionToStringConverter();
+                return WpfConversionAdapter.Single(
+                    configuration,
+                    converter,
+                    typeof(VersionToStringConverter),
+                    settings =>
+                    {
+                        if (settings.PreferredCulture is { } culture)
+                            converter.PreferredCulture = culture;
+                        if (settings.GetDefaultResult is not null)
+                            converter.DefaultResult = WpfConversionAdapter.ToPlatform(
+                                settings.GetDefaultResult()
+                            );
+                    }
+                );
+            })
+        );
+
+    [TestMethod]
+    [DynamicData(
+        nameof(ObjectCases),
+        DynamicDataDisplayName = nameof(WpfTestDisplay.Name),
+        DynamicDataDisplayNameDeclaringType = typeof(WpfTestDisplay)
+    )]
+    public void ObjectUnsupportedReverse(WpfPlatformCase scenario) =>
+        WpfPlatformBehavior.VerifyUnsupportedReverse(scenario);
+
+    private static void VerifyPropertyWiring()
+    {
+        WpfPropertyAssertions.VerifyInherited(() => new VersionToStringConverter());
+    }
+}

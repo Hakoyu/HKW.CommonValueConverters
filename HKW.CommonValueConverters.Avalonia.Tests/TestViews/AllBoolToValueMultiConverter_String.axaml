@@ -1,6 +1,22 @@
-<t:TestTarget xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:t="using:HKW.CommonValueConverters.Avalonia.Tests" xmlns:c="using:HKW.CommonValueConverters.Avalonia"
-    x:CompileBindings="False">
-  <t:TestTarget.Resources><t:StringAllBoolToValueMultiConverter x:Key="AllBoolToValueMultiConverter_String" TrueValue="yes" FalseValue="no" NullValue="nil" DefaultResult="mixed"></t:StringAllBoolToValueMultiConverter></t:TestTarget.Resources>
-  <t:TestTarget.Result><MultiBinding Converter="{StaticResource AllBoolToValueMultiConverter_String}"><Binding Path="V0" /><Binding Path="V1" /></MultiBinding></t:TestTarget.Result>
+<t:TestTarget
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:t="using:HKW.CommonValueConverters.Avalonia.Tests"
+  xmlns:c="using:HKW.CommonValueConverters.Avalonia"
+  x:CompileBindings="False"
+>
+  <t:TestTarget.Resources>
+    <t:StringAllBoolToValueMultiConverter
+      x:Key="AllBoolToValueMultiConverter_String"
+      TrueValue="yes"
+      FalseValue="no"
+      NullValue="nil"
+      DefaultResult="mixed"
+    ></t:StringAllBoolToValueMultiConverter>
+  </t:TestTarget.Resources>
+  <t:TestTarget.Result>
+    <MultiBinding Converter="{StaticResource AllBoolToValueMultiConverter_String}">
+      <Binding Path="V0" /><Binding Path="V1" />
+    </MultiBinding>
+  </t:TestTarget.Result>
 </t:TestTarget>

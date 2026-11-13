@@ -1,0 +1,74 @@
+using HKW.CommonValueConvertersTest;
+using HKW.CommonValueConvertersTest.Testing;
+using static HKW.CommonValueConverters.WPF.Tests.WpfScenario;
+
+namespace HKW.CommonValueConverters.WPF.Tests;
+
+[TestClass]
+public sealed class __Converter__Tests
+{
+    public static IEnumerable<object[]> BehaviorCases => __Converter__Suite.Cases;
+
+    [TestMethod]
+    [DynamicData(nameof(BehaviorCases))]
+    [ConverterTest(typeof(__Converter__), ConverterTestLayer.Behavior)]
+    public void Behavior(SingleConversionCase<__Converter__Suite.Configuration> scenario) =>
+        PlatformThread.Run(() => scenario.Run(configuration =>
+        {
+            var converter = new __Converter__();
+            return WpfConversionAdapter.Single(
+                configuration,
+                converter,
+                typeof(__Converter__),
+                settings =>
+                {
+                    if (settings.GetDefaultResult is not null)
+                    {
+                        converter.DefaultResult = WpfConversionAdapter.ToPlatform(
+                            settings.GetDefaultResult()
+                        );
+                    }
+                }
+            );
+        }));
+
+    public static IEnumerable<object[]> ObjectCases =>
+    [
+        [
+            new WpfPlatformCase(
+                "__Converter__",
+                typeof(__Converter__),
+                () => S<__Converter__>(true, false, false, true),
+                "__Converter__.xaml",
+                "fallback",
+                CompareConfiguration,
+                () => WpfPropertyAssertions.VerifyInherited(() => new __Converter__())
+            ),
+        ],
+    ];
+
+    [TestMethod]
+    [DynamicData(nameof(ObjectCases))]
+    [ConverterTest(typeof(__Converter__), ConverterTestLayer.Properties)]
+    public void Properties(WpfPlatformCase scenario) => WpfPropertyAssertions.Verify(scenario);
+
+    [TestMethod]
+    [TestCategory("Binding")]
+    [DynamicData(nameof(ObjectCases))]
+    [ConverterTest(typeof(__Converter__), ConverterTestLayer.Binding)]
+    public void Binding(WpfPlatformCase scenario) => WpfBindingRunner.Verify(scenario);
+
+    [TestMethod]
+    [TestCategory("Xaml")]
+    [DynamicData(nameof(ObjectCases))]
+    [ConverterTest(typeof(__Converter__), ConverterTestLayer.Xaml)]
+    public void Xaml(WpfPlatformCase scenario) => WpfXamlRunner.Verify(scenario);
+
+    private static void CompareConfiguration(ConverterBase configured, ConverterBase loaded)
+    {
+        var expected = (__Converter__)configured;
+        var actual = (__Converter__)loaded;
+        WpfAssert.AssertResult(expected.DefaultResult, actual.DefaultResult);
+        WpfAssert.AssertResult(expected.PreferredCulture, actual.PreferredCulture);
+    }
+}

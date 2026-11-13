@@ -6,7 +6,7 @@
 |---|---|---|
 | `HKW.CommonValueConverters` | `net10.0` | 平台无关转换逻辑，不引用 UI 框架 |
 | `HKW.CommonValueConverters.WPF` | `net10.0-windows` | WPF `DependencyObject`、依赖属性及转换器接口 |
-| `HKW.CommonValueConverters.Avalonia` | `net10.0` | Avalonia 12.1.5 `AvaloniaObject`、StyledProperty 及转换器接口 |
+| `HKW.CommonValueConverters.Avalonia` | `net10.0` | Avalonia `AvaloniaObject`、StyledProperty 及转换器接口 |
 
 平台库引用核心，每个包装器独占核心实例，复用通用转换算法。两个平台共有 28 个单值、10 个多值包装器，以及 6 个泛型家族的同名非泛型 `object?` 版本：`BoolToValueConverter`、`EqualsToValueConverter`、`AllBoolToValueMultiConverter`、`AllEqualsMultiConverter`、`AnyEqualsMultiConverter`、`EqualsCountMultiConverter`。WPF 另外提供 17 个平台专用转换器及便捷预设（14 个单值、3 个多值），共 61 个公开转换器类型；Avalonia 保持原有 44 个类型。WPF 专用算法的内部实现位于 WPF 程序集，不向平台无关核心引入 WPF 依赖。
 
@@ -63,7 +63,7 @@ var result = converter.Convert(true, typeof(string), null, null); // "Yes"
 ```xml
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:c="clr-namespace:HKW.CommonValueConverters.WPF;assembly=HKW.CommonValueConverters.WPF">
+        xmlns:c="https://hkw.com/commonvalueconverters/wpf">
     <Window.Resources>
         <c:BoolToValueConverter x:Key="ShowWhenTrue"
             TrueValue="{x:Static Visibility.Visible}"
@@ -140,12 +140,12 @@ var converter = new HKW.CommonValueConverters.WPF.BoolToValueConverter<System.Wi
 
 ## Avalonia 用法
 
-引用 `HKW.CommonValueConverters.Avalonia`。XAML 中使用 `using:HKW.CommonValueConverters.Avalonia` 命名空间，例如：
+引用 `HKW.CommonValueConverters.Avalonia`。XAML 中使用 `https://hkw.com/commonvalueconverters/avalonia` XML定义，例如：
 
 ```xml
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:c="using:HKW.CommonValueConverters.Avalonia">
+             xmlns:c="https://hkw.com/commonvalueconverters/avalonia">
     <UserControl.Resources>
         <c:BoolToValueConverter x:Key="StatusText"
             TrueValue="Ready" FalseValue="Waiting" />
@@ -268,52 +268,13 @@ public sealed class UpperCaseConverter : ValueConverterBase
 }
 ```
 
-`culture` 已解析且非空。需要反向时重写 `ConvertBackCore`；多值实现继承 `MultiValueConverterBase`。按转换器的实际输入语义处理哨兵，不要把所有可选输入一律过滤。
-
-## 破坏性变更迁移
-
-| 旧用法 | 新用法 |
-|---|---|
-| 重写公共 `Convert` / `ConvertBack` | 重写受保护的 `ConvertCore` / `ConvertBackCore`，文化参数非空 |
-| 设置 `CommonConverterBase.UnsetValue` | 在包装层双向映射 `ConverterResults.UnsetValue` |
-| 使用原生 `XxxProperty` 字段 | 改为核心 `CommonDependencyProperty<T>`；平台强类型访问可直接传入，原生 API 使用 `.Value` 解包 |
-| 通过核心接口调用 `GetValue` / `SetValue` | 使用平台 `ConverterBase` 的强类型访问重载；核心 `ICommonValueConverter` 仍仅保留文化偏好契约 |
-| 失败结果默认 `null` | 默认核心 `UnsetValue`；需要旧行为时显式设置 `GetDefaultResult = () => null` |
-| `SelectCulture(() => culture)` | `SelectCulture(culture)`；公共转换入口会自动选择文化 |
-| 依赖错误数量导致异常 | 普通输入失败返回默认结果；不支持的反向转换仍抛异常 |
-| 可空反转改变空分支、相等多绑定认为两个 null 不相等 | 空分支独立，两个 null 相等 |
-| 反向解析依赖进程文化 | 使用统一有效文化，先精确格式再宽松解析 |
-
-源码中全注释的 `ValueConverterGroup`、`StringToObjectConverter` 不属于已提供的功能。
-
-### 从旧平台库迁移
-
-- 将旧 `HKW.WPF.Converters` / `HKW.HKWAvalonia.Converters` 命名空间替换为对应的新平台命名空间。
-- 直接实例化转换器，不再使用静态 `Instance` 或可写 `CommonValueConverter`。通用属性句柄由核心统一定义，注册和类型验证由对应平台负责。
-- 旧 Avalonia 布尔转换、旧库额外反向行为不保留，按当前核心契约选择绑定方向。
-- 不迁入旧库的 Brush、Thickness、Visibility 专有转换器；简单条件选值可使用非泛型 `BoolToValueConverter` 配置实际平台值。
-
 ## 验证与本地打包
 
 使用 .NET 10 SDK 和现有 MSTest/VSTest 配置。完整解决方案和 WPF 测试需要 Windows；Avalonia 项目本身不依赖 WPF。
 
-核心测试中的 [ConverterTestCoverageTests](HKW.CommonValueConverters.Tests/ConverterTestCoverageTests.cs) 检查核心程序集, 两个平台测试项目则分别检查各自平台程序集的非抽象单值和多值转换器, 包含泛型及间接子类. 对应测试必须是当前测试程序集内未标记 `Ignore` 的 MSTest 测试类中的有效测试方法, 类和方法上的 `Ignore` 均不计入. 方法名区分大小写, 可以是 `<转换器名称>` 或 `<转换器名称>_<非空测试内容>`, 泛型名称不含类型参数, 每个转换器至少匹配一个测试方法即可. 缺失时按组列出所有缺失类型并抛出 `InvalidOperationException`, 使检查失败; 命名不符的已有测试也会被报告为缺失. 命名检查不等于代码覆盖率; 平台测试另以类型身份核对行为、Binding 和 XAML 用例矩阵, 防止同名泛型/非泛型类型互相掩盖遗漏.
-
-平台 UI 测试必须通过各自的线程调度辅助执行, 不跨线程复用转换器或控件. WPF 测试需要 Windows Desktop runtime; Avalonia 测试依赖与生产库版本一致的 `Avalonia.Headless` (12.1.5), 保留 MSTest 运行入口. 每个用例独立创建状态并清理绑定, 全局文化或配置变更须恢复. 真实绑定及编译 XAML 用例随普通 `dotnet test` 自动执行, 无需单独启动桌面应用.
-
 ```powershell
-dotnet restore HKW.CommonValueConverters.sln
-dotnet test HKW.CommonValueConverters.Tests\HKW.CommonValueConverters.Tests.csproj --no-restore
-dotnet test HKW.CommonValueConverters.WPF.Tests\HKW.CommonValueConverters.WPF.Tests.csproj --no-restore
-dotnet test HKW.CommonValueConverters.Avalonia.Tests\HKW.CommonValueConverters.Avalonia.Tests.csproj --no-restore
-dotnet build HKW.CommonValueConverters.sln --configuration Release --no-restore
+dotnet restore
+dotnet build --configuration Release
+dotnet test --configuration Release
+dotnet pack --configuration Release
 ```
-
-单独构建平台库：
-
-```powershell
-dotnet build HKW.CommonValueConverters.WPF\HKW.CommonValueConverters.WPF.csproj --configuration Release
-dotnet build HKW.CommonValueConverters.Avalonia\HKW.CommonValueConverters.Avalonia.csproj --configuration Release
-```
-
-三个库均按 `GeneratePackageOnBuild` 配置在各自 `bin\Release` 生成 NuGet 包，测试项目不打包。本地构建不会发布；现有标签发布工作流保持不变，仍只发布核心包。

@@ -1,0 +1,58 @@
+<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:c="clr-namespace:HKW.CommonValueConverters.WPF;assembly=HKW.CommonValueConverters.WPF"
+  xmlns:t="clr-namespace:HKW.CommonValueConverters.WPF.Tests"
+  xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+>
+  <DataTemplate x:Key="AllBoolToValueMultiConverter_String">
+    <Grid>
+      <Grid.Resources>
+        <t:StringAllBoolConverter
+          x:Key="Converter"
+          TrueValue="yes"
+          FalseValue="no"
+          NullValue="null"
+          DefaultResult="mixed"
+        />
+      </Grid.Resources>
+      <t:TestTarget x:Name="Target">
+        <t:TestTarget.Result>
+          <MultiBinding
+            Converter="{StaticResource Converter}"
+            Mode="OneWay"
+            ConverterCulture="en-US"
+          >
+            <Binding Path="A" />
+            <Binding Path="B" />
+          </MultiBinding>
+        </t:TestTarget.Result>
+      </t:TestTarget>
+    </Grid>
+  </DataTemplate>
+  <DataTemplate x:Key="AllBoolToValueMultiConverter">
+    <Grid>
+      <Grid.Resources>
+        <c:AllBoolToValueMultiConverter
+          x:Key="Converter"
+          TrueValue="yes"
+          FalseValue="no"
+          NullValue="null"
+          DefaultResult="mixed"
+        />
+      </Grid.Resources>
+      <t:TestTarget x:Name="Target">
+        <t:TestTarget.Result>
+          <MultiBinding
+            Converter="{StaticResource Converter}"
+            Mode="OneWay"
+            ConverterCulture="en-US"
+          >
+            <Binding Path="A" />
+            <Binding Path="B" />
+          </MultiBinding>
+        </t:TestTarget.Result>
+      </t:TestTarget>
+    </Grid>
+  </DataTemplate>
+</ResourceDictionary>

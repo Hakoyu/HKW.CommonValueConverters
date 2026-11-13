@@ -1,0 +1,54 @@
+<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:c="clr-namespace:HKW.CommonValueConverters.WPF;assembly=HKW.CommonValueConverters.WPF"
+  xmlns:t="clr-namespace:HKW.CommonValueConverters.WPF.Tests"
+  xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+>
+  <DataTemplate x:Key="BoolToValueConverter_String">
+    <Grid>
+      <Grid.Resources>
+        <t:StringBoolConverter
+          x:Key="Converter"
+          TrueValue="yes"
+          FalseValue="no"
+          NullValue="null"
+          IsNullable="True"
+        />
+      </Grid.Resources>
+      <t:TestTarget x:Name="Target">
+        <t:TestTarget.Result>
+          <Binding
+            Path="A"
+            Converter="{StaticResource Converter}"
+            Mode="OneWay"
+            ConverterCulture="en-US"
+          />
+        </t:TestTarget.Result>
+      </t:TestTarget>
+    </Grid>
+  </DataTemplate>
+  <DataTemplate x:Key="BoolToValueConverter">
+    <Grid>
+      <Grid.Resources>
+        <c:BoolToValueConverter
+          x:Key="Converter"
+          TrueValue="yes"
+          FalseValue="no"
+          NullValue="null"
+          IsNullable="True"
+        />
+      </Grid.Resources>
+      <t:TestTarget x:Name="Target">
+        <t:TestTarget.Result>
+          <Binding
+            Path="A"
+            Converter="{StaticResource Converter}"
+            Mode="OneWay"
+            ConverterCulture="en-US"
+          />
+        </t:TestTarget.Result>
+      </t:TestTarget>
+    </Grid>
+  </DataTemplate>
+</ResourceDictionary>

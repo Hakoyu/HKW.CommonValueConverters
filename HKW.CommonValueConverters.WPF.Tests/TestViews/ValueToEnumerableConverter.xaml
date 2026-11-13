@@ -1,0 +1,25 @@
+<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:c="clr-namespace:HKW.CommonValueConverters.WPF;assembly=HKW.CommonValueConverters.WPF"
+  xmlns:t="clr-namespace:HKW.CommonValueConverters.WPF.Tests"
+  xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+>
+  <DataTemplate x:Key="ValueToEnumerableConverter">
+    <Grid>
+      <Grid.Resources>
+        <c:ValueToEnumerableConverter x:Key="Converter" />
+      </Grid.Resources>
+      <t:TestTarget x:Name="Target">
+        <t:TestTarget.Result>
+          <Binding
+            Path="A"
+            Converter="{StaticResource Converter}"
+            Mode="OneWay"
+            ConverterCulture="en-US"
+          />
+        </t:TestTarget.Result>
+      </t:TestTarget>
+    </Grid>
+  </DataTemplate>
+</ResourceDictionary>

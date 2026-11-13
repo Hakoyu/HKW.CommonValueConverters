@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="MSTest" Version="4.5.3" />
     <ProjectReference Include="..\HKW.CommonValueConverters.WPF\HKW.CommonValueConverters.WPF.csproj" />
+    <ProjectReference Include="..\HKW.CommonValueConverters.Tests\HKW.CommonValueConverters.Tests.csproj" />
     <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
   </ItemGroup>
 </Project>

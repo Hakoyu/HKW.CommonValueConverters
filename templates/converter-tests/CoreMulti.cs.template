@@ -1,0 +1,74 @@
+using HKW.CommonValueConverters;
+using HKW.CommonValueConvertersTest.Testing;
+
+namespace HKW.CommonValueConvertersTest;
+
+public static class __Converter__Suite
+{
+    public sealed class Configuration
+    {
+        public Func<object?>? GetDefaultResult { get; set; }
+    }
+
+    public static IEnumerable<object[]> Cases
+    {
+        get
+        {
+            yield return
+            [
+                new MultiConversionCase<Configuration>("EqualInputs", factory =>
+                {
+                    var subject = factory(new());
+                    Assert.AreEqual(true, subject.Convert([7, 7], null, null, null));
+                }),
+            ];
+            yield return
+            [
+                new MultiConversionCase<Configuration>("DifferentInputs", factory =>
+                {
+                    var subject = factory(new());
+                    Assert.AreEqual(false, subject.Convert([7, 8], null, null, null));
+                }),
+            ];
+            yield return
+            [
+                new MultiConversionCase<Configuration>("MissingInputsUseConfiguredFallback", factory =>
+                {
+                    var fallback = new object();
+                    var subject = factory(new() { GetDefaultResult = () => fallback });
+                    Assert.AreSame(fallback, subject.Convert([], null, null, null));
+                }),
+            ];
+        }
+    }
+}
+
+[TestClass]
+public sealed class __Converter__Tests
+{
+    public static IEnumerable<object[]> Cases => __Converter__Suite.Cases;
+
+    [TestMethod]
+    [DynamicData(nameof(Cases))]
+    [ConverterTest(typeof(__Converter__), ConverterTestLayer.Behavior)]
+    public void Behavior(MultiConversionCase<__Converter__Suite.Configuration> scenario) =>
+        scenario.Run(Create);
+
+    private static MultiConversionSubject<__Converter__Suite.Configuration> Create(
+        __Converter__Suite.Configuration configuration
+    )
+    {
+        var converter = new __Converter__();
+        return new(
+            configuration,
+            converter,
+            settings =>
+            {
+                if (settings.GetDefaultResult is not null)
+                    converter.GetDefaultResult = settings.GetDefaultResult;
+            },
+            converter.Convert,
+            converter.ConvertBack
+        );
+    }
+}

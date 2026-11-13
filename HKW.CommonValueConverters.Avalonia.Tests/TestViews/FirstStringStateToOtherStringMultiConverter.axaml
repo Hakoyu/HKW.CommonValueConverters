@@ -1,6 +1,18 @@
-<t:TestTarget xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:t="using:HKW.CommonValueConverters.Avalonia.Tests" xmlns:c="using:HKW.CommonValueConverters.Avalonia"
-    x:CompileBindings="False">
-  <t:TestTarget.Resources><c:FirstStringStateToOtherStringMultiConverter x:Key="FirstStringStateToOtherStringMultiConverter" ></c:FirstStringStateToOtherStringMultiConverter></t:TestTarget.Resources>
-  <t:TestTarget.Result><MultiBinding Converter="{StaticResource FirstStringStateToOtherStringMultiConverter}"><Binding Path="V0" /><Binding Path="V1" /><Binding Path="V2" /><Binding Path="V3" /><Binding Path="V4" /></MultiBinding></t:TestTarget.Result>
+<t:TestTarget
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:t="using:HKW.CommonValueConverters.Avalonia.Tests"
+  xmlns:c="using:HKW.CommonValueConverters.Avalonia"
+  x:CompileBindings="False"
+>
+  <t:TestTarget.Resources>
+    <c:FirstStringStateToOtherStringMultiConverter
+      x:Key="FirstStringStateToOtherStringMultiConverter"
+    ></c:FirstStringStateToOtherStringMultiConverter>
+  </t:TestTarget.Resources>
+  <t:TestTarget.Result>
+    <MultiBinding Converter="{StaticResource FirstStringStateToOtherStringMultiConverter}">
+      <Binding Path="V0" /><Binding Path="V1" /><Binding Path="V2" /><Binding Path="V3" /><Binding Path="V4" />
+    </MultiBinding>
+  </t:TestTarget.Result>
 </t:TestTarget>
